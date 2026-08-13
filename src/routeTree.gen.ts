@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BomRouteImport } from './routes/bom'
 import { Route as HubsRouteImport } from './routes/hubs'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as ProcurementRouteImport } from './routes/procurement'
 import { Route as ShortagesRouteImport } from './routes/shortages'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const OrdersRoute = OrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProcurementRoute = ProcurementRouteImport.update({
+  id: '/procurement',
+  path: '/procurement',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShortagesRoute = ShortagesRouteImport.update({
   id: '/shortages',
   path: '/shortages',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/bom': typeof BomRoute
   '/hubs': typeof HubsRoute
   '/orders': typeof OrdersRoute
+  '/procurement': typeof ProcurementRoute
   '/shortages': typeof ShortagesRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/bom': typeof BomRoute
   '/hubs': typeof HubsRoute
   '/orders': typeof OrdersRoute
+  '/procurement': typeof ProcurementRoute
   '/shortages': typeof ShortagesRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,22 @@ export interface FileRoutesById {
   '/bom': typeof BomRoute
   '/hubs': typeof HubsRoute
   '/orders': typeof OrdersRoute
+  '/procurement': typeof ProcurementRoute
   '/shortages': typeof ShortagesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bom' | '/hubs' | '/orders' | '/shortages'
+  fullPaths: '/' | '/bom' | '/hubs' | '/orders' | '/procurement' | '/shortages'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bom' | '/hubs' | '/orders' | '/shortages'
-  id: '__root__' | '/' | '/bom' | '/hubs' | '/orders' | '/shortages'
+  to: '/' | '/bom' | '/hubs' | '/orders' | '/procurement' | '/shortages'
+  id:
+    | '__root__'
+    | '/'
+    | '/bom'
+    | '/hubs'
+    | '/orders'
+    | '/procurement'
+    | '/shortages'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +92,7 @@ export interface RootRouteChildren {
   BomRoute: typeof BomRoute
   HubsRoute: typeof HubsRoute
   OrdersRoute: typeof OrdersRoute
+  ProcurementRoute: typeof ProcurementRoute
   ShortagesRoute: typeof ShortagesRoute
 }
 
@@ -109,6 +126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/procurement': {
+      id: '/procurement'
+      path: '/procurement'
+      fullPath: '/procurement'
+      preLoaderRoute: typeof ProcurementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shortages': {
       id: '/shortages'
       path: '/shortages'
@@ -124,6 +148,7 @@ const rootRouteChildren: RootRouteChildren = {
   BomRoute: BomRoute,
   HubsRoute: HubsRoute,
   OrdersRoute: OrdersRoute,
+  ProcurementRoute: ProcurementRoute,
   ShortagesRoute: ShortagesRoute,
 }
 export const routeTree = rootRouteImport
