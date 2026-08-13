@@ -48,21 +48,24 @@ export const hubStock: Record<string, Record<string, { stock: number; required: 
   const seedFactor: Record<string, number> = { F8: 1, F9: 0.72, Fp: 1.2, Fm: 0.6, F10: 0.9, F11: 0.5 };
   const out: Record<string, Record<string, { stock: number; required: number }>> = {};
   hubs.forEach((h, hi) => {
-    out[h.code] = {};
+    const row: Record<string, { stock: number; required: number }> = {};
     subparts.forEach((s, si) => {
-      const base = Object.values(s.bom).reduce((a, b) => a + b, 0) * 900 * seedFactor[h.code];
+      const base = Object.values(s.bom).reduce((a, b) => a + b, 0) * 900 * (seedFactor[h.code] ?? 1);
       const required = Math.round(base / 10) * 10;
       const swing = ((hi * 7 + si * 13) % 11) / 10 - 0.35;
-      out[h.code][s.code] = { stock: Math.max(0, Math.round((required * (1 + swing)) / 10) * 10), required };
+      row[s.code] = { stock: Math.max(0, Math.round((required * (1 + swing)) / 10) * 10), required };
     });
+    out[h.code] = row;
   });
   return out;
 })();
 
 export const shortageFor = (hub: string, code: string) => {
-  const r = hubStock[hub][code];
+  const r = hubStock[hub]?.[code];
+  if (!r) return 0;
   return r.required - r.stock;
 };
+
 
 export const workers = [
   { id: "W-101", name: "Sunita Pawar", hub: "F8", role: "Assembly", output: 1240, days: 6, avg: 207 },
