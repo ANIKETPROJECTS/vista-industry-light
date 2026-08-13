@@ -40,10 +40,15 @@ function Hubs() {
     >
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {hubs.map((h) => (
-          <button
+          <div
             key={h.code}
+            role="button"
+            tabIndex={0}
             onClick={() => setActive(h.code)}
-            className={`panel p-5 text-left transition-colors ${
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") setActive(h.code);
+            }}
+            className={`panel cursor-pointer p-5 text-left transition-colors ${
               h.code === active ? "ring-2 ring-ring" : "hover:bg-muted/40"
             }`}
           >
