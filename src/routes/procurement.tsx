@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { Shell } from "@/components/erp/Shell";
 import { Kpi, Panel, Tag } from "@/components/erp/bits";
@@ -57,7 +57,11 @@ function Procurement() {
           <tbody>
             {procurement.map((p) => (
               <tr key={p.id} className="border-b border-border/70 last:border-0 hover:bg-muted/40">
-                <td className="tabular px-5 py-3">{p.id}</td>
+                <td className="tabular px-5 py-3">
+                  <Link to="/po/$id" params={{ id: p.id }} className="font-medium hover:text-primary">
+                    {p.id}
+                  </Link>
+                </td>
                 <td className="px-5 py-3 font-medium">{p.part}</td>
                 <td className="px-5 py-3">
                   <Tag tone="info">{p.hub}</Tag>

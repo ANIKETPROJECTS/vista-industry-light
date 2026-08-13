@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarRange, Plus } from "lucide-react";
 import { Shell } from "@/components/erp/Shell";
 import { Kpi, Panel, Tag } from "@/components/erp/bits";
@@ -60,7 +60,11 @@ function Orders() {
           <tbody>
             {skus.map((s) => (
               <tr key={s.id} className="border-b border-border/70 last:border-0 hover:bg-muted/40">
-                <td className="px-5 py-3 font-medium">{s.name}</td>
+                <td className="px-5 py-3 font-medium">
+                  <Link to="/sku/$code" params={{ code: s.code }} className="hover:text-primary">
+                    {s.name}
+                  </Link>
+                </td>
                 <td className="px-5 py-3 text-muted-foreground">{s.company}</td>
                 <td className="tabular px-5 py-3 text-muted-foreground">{s.code}</td>
                 <td className="tabular px-5 py-3 text-right font-semibold">{num(s.order)}</td>

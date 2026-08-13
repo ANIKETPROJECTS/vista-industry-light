@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Download, Plus } from "lucide-react";
 import { Shell } from "@/components/erp/Shell";
 import { Panel, Tag } from "@/components/erp/bits";
@@ -55,7 +55,11 @@ function Bom() {
               {subparts.map((s) => (
                 <tr key={s.code} className="border-b border-border/70 last:border-0 hover:bg-muted/40">
                   <td className="sticky left-0 bg-card px-5 py-3">
-                    <p className="font-medium">{s.name}</p>
+                    <p className="font-medium">
+                      <Link to="/part/$code" params={{ code: s.code }} className="hover:text-primary">
+                        {s.name}
+                      </Link>
+                    </p>
                     <p className="tabular text-xs text-muted-foreground">
                       {s.code} · {s.material} · {s.weight} kg
                     </p>
@@ -121,7 +125,11 @@ function Bom() {
             {subparts.map((s) => (
               <tr key={s.code} className="border-b border-border/70 last:border-0 hover:bg-muted/40">
                 <td className="tabular px-5 py-2.5">{s.code}</td>
-                <td className="px-5 py-2.5 font-medium">{s.name}</td>
+                <td className="px-5 py-2.5 font-medium">
+                  <Link to="/part/$code" params={{ code: s.code }} className="hover:text-primary">
+                    {s.name}
+                  </Link>
+                </td>
                 <td className="px-5 py-2.5 text-muted-foreground">{s.material}</td>
                 <td className="tabular px-5 py-2.5 text-right">{s.weight.toFixed(3)}</td>
                 <td className="tabular px-5 py-2.5 text-right">{num(s.rate)}</td>

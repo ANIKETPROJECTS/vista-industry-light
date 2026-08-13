@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, RefreshCw } from "lucide-react";
 import { Shell } from "@/components/erp/Shell";
@@ -70,7 +70,12 @@ function Hubs() {
                 <p className="tabular text-sm font-semibold">{h.updated.slice(0, 6)}</p>
               </div>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground">Manager · {h.manager}</p>
+            <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+              <span>Manager · {h.manager}</span>
+              <Link to="/hub/$code" params={{ code: h.code }} className="font-medium text-primary hover:underline">
+                Open unit →
+              </Link>
+            </div>
           </button>
         ))}
       </div>
@@ -97,7 +102,11 @@ function Hubs() {
               return (
                 <tr key={r.code} className="border-b border-border/70 last:border-0 hover:bg-muted/40">
                   <td className="px-5 py-3">
-                    <p className="font-medium">{r.name}</p>
+                    <p className="font-medium">
+                      <Link to="/part/$code" params={{ code: r.code }} className="hover:text-primary">
+                        {r.name}
+                      </Link>
+                    </p>
                     <p className="tabular text-xs text-muted-foreground">{r.code}</p>
                   </td>
                   <td className="px-5 py-3">

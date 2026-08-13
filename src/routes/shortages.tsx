@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Filter, Send } from "lucide-react";
 import { Shell } from "@/components/erp/Shell";
 import { Kpi, Panel, Tag } from "@/components/erp/bits";
@@ -69,7 +69,11 @@ function Shortages() {
                 return (
                   <tr key={r.part.code} className="border-b border-border/70 last:border-0 hover:bg-muted/40">
                     <td className="sticky left-0 bg-card px-5 py-3">
-                      <p className="font-medium">{r.part.name}</p>
+                      <p className="font-medium">
+                      <Link to="/part/$code" params={{ code: r.part.code }} className="hover:text-primary">
+                        {r.part.name}
+                      </Link>
+                    </p>
                       <p className="tabular text-xs text-muted-foreground">{r.part.code}</p>
                     </td>
                     {r.cells.map((c, i) => (
