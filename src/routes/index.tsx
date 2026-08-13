@@ -99,6 +99,7 @@ function Dashboard() {
                   stroke="var(--color-chart-1)"
                   strokeWidth={2}
                   fill="url(#prod)"
+                  isAnimationActive={false}
                 />
                 <Line
                   type="monotone"
