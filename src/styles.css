@@ -157,5 +157,34 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    background-image:
+      linear-gradient(to right, oklch(0.45 0.11 245 / 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(0.45 0.11 245 / 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
   }
 }
+
+@utility panel {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+@utility tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility rule-header {
+  background-image: var(--gradient-header);
+  color: var(--primary-foreground);
+}
+
