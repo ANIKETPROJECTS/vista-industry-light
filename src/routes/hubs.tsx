@@ -81,7 +81,7 @@ function Hubs() {
                 Open unit →
               </Link>
             </div>
-          </button>
+          </div>
         ))}
       </div>
 
