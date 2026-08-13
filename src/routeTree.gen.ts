@@ -16,6 +16,11 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ProcurementRouteImport } from './routes/procurement'
 import { Route as ProductionRouteImport } from './routes/production'
 import { Route as ShortagesRouteImport } from './routes/shortages'
+import { Route as HubCodeRouteImport } from './routes/hub.$code'
+import { Route as PartCodeRouteImport } from './routes/part.$code'
+import { Route as PoIdRouteImport } from './routes/po.$id'
+import { Route as SkuCodeRouteImport } from './routes/sku.$code'
+import { Route as WorkerIdRouteImport } from './routes/worker.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +57,31 @@ const ShortagesRoute = ShortagesRouteImport.update({
   path: '/shortages',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HubCodeRoute = HubCodeRouteImport.update({
+  id: '/hub/$code',
+  path: '/hub/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartCodeRoute = PartCodeRouteImport.update({
+  id: '/part/$code',
+  path: '/part/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PoIdRoute = PoIdRouteImport.update({
+  id: '/po/$id',
+  path: '/po/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkuCodeRoute = SkuCodeRouteImport.update({
+  id: '/sku/$code',
+  path: '/sku/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkerIdRoute = WorkerIdRouteImport.update({
+  id: '/worker/$id',
+  path: '/worker/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +91,11 @@ export interface FileRoutesByFullPath {
   '/procurement': typeof ProcurementRoute
   '/production': typeof ProductionRoute
   '/shortages': typeof ShortagesRoute
+  '/hub/$code': typeof HubCodeRoute
+  '/part/$code': typeof PartCodeRoute
+  '/po/$id': typeof PoIdRoute
+  '/sku/$code': typeof SkuCodeRoute
+  '/worker/$id': typeof WorkerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +105,11 @@ export interface FileRoutesByTo {
   '/procurement': typeof ProcurementRoute
   '/production': typeof ProductionRoute
   '/shortages': typeof ShortagesRoute
+  '/hub/$code': typeof HubCodeRoute
+  '/part/$code': typeof PartCodeRoute
+  '/po/$id': typeof PoIdRoute
+  '/sku/$code': typeof SkuCodeRoute
+  '/worker/$id': typeof WorkerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +120,11 @@ export interface FileRoutesById {
   '/procurement': typeof ProcurementRoute
   '/production': typeof ProductionRoute
   '/shortages': typeof ShortagesRoute
+  '/hub/$code': typeof HubCodeRoute
+  '/part/$code': typeof PartCodeRoute
+  '/po/$id': typeof PoIdRoute
+  '/sku/$code': typeof SkuCodeRoute
+  '/worker/$id': typeof WorkerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +136,11 @@ export interface FileRouteTypes {
     | '/procurement'
     | '/production'
     | '/shortages'
+    | '/hub/$code'
+    | '/part/$code'
+    | '/po/$id'
+    | '/sku/$code'
+    | '/worker/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +150,11 @@ export interface FileRouteTypes {
     | '/procurement'
     | '/production'
     | '/shortages'
+    | '/hub/$code'
+    | '/part/$code'
+    | '/po/$id'
+    | '/sku/$code'
+    | '/worker/$id'
   id:
     | '__root__'
     | '/'
@@ -109,6 +164,11 @@ export interface FileRouteTypes {
     | '/procurement'
     | '/production'
     | '/shortages'
+    | '/hub/$code'
+    | '/part/$code'
+    | '/po/$id'
+    | '/sku/$code'
+    | '/worker/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +179,11 @@ export interface RootRouteChildren {
   ProcurementRoute: typeof ProcurementRoute
   ProductionRoute: typeof ProductionRoute
   ShortagesRoute: typeof ShortagesRoute
+  HubCodeRoute: typeof HubCodeRoute
+  PartCodeRoute: typeof PartCodeRoute
+  PoIdRoute: typeof PoIdRoute
+  SkuCodeRoute: typeof SkuCodeRoute
+  WorkerIdRoute: typeof WorkerIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -172,6 +237,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShortagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hub/$code': {
+      id: '/hub/$code'
+      path: '/hub/$code'
+      fullPath: '/hub/$code'
+      preLoaderRoute: typeof HubCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/part/$code': {
+      id: '/part/$code'
+      path: '/part/$code'
+      fullPath: '/part/$code'
+      preLoaderRoute: typeof PartCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/po/$id': {
+      id: '/po/$id'
+      path: '/po/$id'
+      fullPath: '/po/$id'
+      preLoaderRoute: typeof PoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sku/$code': {
+      id: '/sku/$code'
+      path: '/sku/$code'
+      fullPath: '/sku/$code'
+      preLoaderRoute: typeof SkuCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/worker/$id': {
+      id: '/worker/$id'
+      path: '/worker/$id'
+      fullPath: '/worker/$id'
+      preLoaderRoute: typeof WorkerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,6 +283,11 @@ const rootRouteChildren: RootRouteChildren = {
   ProcurementRoute: ProcurementRoute,
   ProductionRoute: ProductionRoute,
   ShortagesRoute: ShortagesRoute,
+  HubCodeRoute: HubCodeRoute,
+  PartCodeRoute: PartCodeRoute,
+  PoIdRoute: PoIdRoute,
+  SkuCodeRoute: SkuCodeRoute,
+  WorkerIdRoute: WorkerIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

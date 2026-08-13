@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { UserPlus } from "lucide-react";
 import { Shell } from "@/components/erp/Shell";
@@ -80,7 +80,11 @@ function Production() {
             {workers.map((w) => (
               <tr key={w.id} className="border-b border-border/70 last:border-0 hover:bg-muted/40">
                 <td className="px-5 py-3">
-                  <p className="font-medium">{w.name}</p>
+                  <p className="font-medium">
+                    <Link to="/worker/$id" params={{ id: w.id }} className="hover:text-primary">
+                      {w.name}
+                    </Link>
+                  </p>
                   <p className="tabular text-xs text-muted-foreground">{w.id}</p>
                 </td>
                 <td className="px-5 py-3">

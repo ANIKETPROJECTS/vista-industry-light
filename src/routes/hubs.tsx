@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, RefreshCw } from "lucide-react";
 import { Shell } from "@/components/erp/Shell";
@@ -40,10 +40,15 @@ function Hubs() {
     >
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {hubs.map((h) => (
-          <button
+          <div
             key={h.code}
+            role="button"
+            tabIndex={0}
             onClick={() => setActive(h.code)}
-            className={`panel p-5 text-left transition-colors ${
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") setActive(h.code);
+            }}
+            className={`panel cursor-pointer p-5 text-left transition-colors ${
               h.code === active ? "ring-2 ring-ring" : "hover:bg-muted/40"
             }`}
           >
@@ -70,8 +75,13 @@ function Hubs() {
                 <p className="tabular text-sm font-semibold">{h.updated.slice(0, 6)}</p>
               </div>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground">Manager · {h.manager}</p>
-          </button>
+            <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+              <span>Manager · {h.manager}</span>
+              <Link to="/hub/$code" params={{ code: h.code }} className="font-medium text-primary hover:underline">
+                Open unit →
+              </Link>
+            </div>
+          </div>
         ))}
       </div>
 
@@ -97,7 +107,11 @@ function Hubs() {
               return (
                 <tr key={r.code} className="border-b border-border/70 last:border-0 hover:bg-muted/40">
                   <td className="px-5 py-3">
-                    <p className="font-medium">{r.name}</p>
+                    <p className="font-medium">
+                      <Link to="/part/$code" params={{ code: r.code }} className="hover:text-primary">
+                        {r.name}
+                      </Link>
+                    </p>
                     <p className="tabular text-xs text-muted-foreground">{r.code}</p>
                   </td>
                   <td className="px-5 py-3">
