@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { ArrowLeft, Boxes, ChevronRight, CircleDot, Database, Layers3, LogOut, Plus, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Boxes, ChevronRight, CircleDot, Database, Layers3, LogOut, PackageOpen, Plus, ShieldCheck } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { skus, subparts } from "@/lib/erp-data";
 
@@ -161,6 +161,10 @@ function SubHub() {
           <Link to="/subhub/raw-materials" className="mt-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-primary">
             <Database className="size-4" />
             Raw Materials
+          </Link>
+          <Link to="/inventory" className="mt-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-primary">
+            <PackageOpen className="size-4" />
+            Inventory Management
           </Link>
         </nav>
         <div className="border-t border-sidebar-border p-3">

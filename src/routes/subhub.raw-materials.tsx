@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Boxes, Database, Layers3, LogOut, Plus, Search, X } from "lucide-react";
+import { ArrowLeft, Boxes, Database, Layers3, LogOut, PackageOpen, Plus, Search, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { subparts } from "@/lib/erp-data";
 
@@ -50,7 +50,7 @@ function RawMaterials() {
     <div className="flex min-h-screen bg-white">
       <aside className="flex w-64 shrink-0 flex-col border-r border-sidebar-border bg-white">
         <div className="flex h-[65px] shrink-0 items-center gap-3 border-b border-sidebar-border px-5"><div className="rule-header flex size-9 items-center justify-center rounded-md"><Boxes className="size-4" /></div><div className="leading-tight"><p className="text-sm font-semibold">SubHub</p><p className="text-xs text-muted-foreground">Float ERP workspace</p></div></div>
-        <nav className="flex-1 p-3" aria-label="SubHub navigation"><p className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Modules</p><Link to="/subhub" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-primary"><Layers3 className="size-4" /> Bills of Materials</Link><Link to="/subhub/raw-materials" className="mt-1 flex items-center gap-3 rounded-md bg-sidebar-accent px-3 py-2 text-sm font-medium text-sidebar-primary"><Database className="size-4" /> Raw Materials</Link></nav>
+        <nav className="flex-1 p-3" aria-label="SubHub navigation"><p className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Modules</p><Link to="/subhub" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-primary"><Layers3 className="size-4" /> Bills of Materials</Link><Link to="/subhub/raw-materials" className="mt-1 flex items-center gap-3 rounded-md bg-sidebar-accent px-3 py-2 text-sm font-medium text-sidebar-primary"><Database className="size-4" /> Raw Materials</Link><Link to="/inventory" className="mt-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-primary"><PackageOpen className="size-4" /> Inventory Management</Link></nav>
         <div className="border-t border-sidebar-border p-3"><div className="flex items-center gap-3 rounded-md px-2 py-2"><div className="flex size-8 items-center justify-center rounded-full bg-secondary font-mono text-xs font-semibold">AD</div><div className="min-w-0 flex-1 leading-tight"><p className="text-sm font-medium">Admin</p><p className="text-xs text-muted-foreground">SubHub owner</p></div><button type="button" aria-label="Sign out" onClick={() => { window.localStorage.removeItem(SESSION_KEY); setSignedIn(false); }}><LogOut className="size-4 text-muted-foreground" /></button></div></div>
       </aside>
       <main className="min-w-0 flex-1">
