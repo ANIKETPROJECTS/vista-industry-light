@@ -64,8 +64,8 @@ const parentCards = [
     name: "Float Arm Parent",
     description: "Parent definition for arm and pivot assemblies",
     family: "ARM",
-    status: "Not configured",
-    enabled: false,
+    status: "Configured",
+    enabled: true,
     variants: 3,
     subparts: 7,
     owner: "Assembly engineering",
@@ -76,8 +76,8 @@ const parentCards = [
     name: "Valve Parent",
     description: "Parent definition for valve seat and seal assemblies",
     family: "VALVE",
-    status: "Not configured",
-    enabled: false,
+    status: "Configured",
+    enabled: true,
     variants: 4,
     subparts: 9,
     owner: "Molding engineering",
@@ -88,8 +88,8 @@ const parentCards = [
     name: "Cover Parent",
     description: "Parent definition for cover and retainer assemblies",
     family: "COVER",
-    status: "Not configured",
-    enabled: false,
+    status: "Configured",
+    enabled: true,
     variants: 2,
     subparts: 5,
     owner: "Tooling engineering",
@@ -132,7 +132,7 @@ function SubHub() {
     return <SubHubLogin onSuccess={() => setSignedIn(true)} />;
   }
 
-  if (pathname === "/subhub/float-parent") {
+  if (pathname.startsWith("/subhub/") && pathname !== "/subhub") {
     return <Outlet />;
   }
 
@@ -220,9 +220,9 @@ function SubHub() {
               {parentDefinitions.map((parent) => {
                 const selected = selectedParent === parent.code;
                 return (
-                  <Link
+                  <a
                     key={parent.code}
-                    to={parent.enabled ? "/subhub/float-parent" : "/subhub"}
+                    href={parent.code === "P-FLT" ? "/subhub/float-parent" : `/subhub/parent/${parent.code}`}
                     className={`panel group relative p-4 text-left transition ${
                       selected ? "border-primary bg-primary/[0.04] ring-1 ring-primary/20" : parent.enabled ? "hover:-translate-y-0.5 hover:border-primary/40" : "cursor-not-allowed opacity-65"
                     }`}
@@ -251,14 +251,10 @@ function SubHub() {
                     <p className="mt-2 truncate text-[11px] text-muted-foreground">
                       Owner: {parent.owner} · Updated {parent.updated}
                     </p>
-                    {parent.enabled ? (
-                      <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
-                        Open structure <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                      </div>
-                    ) : (
-                      <div className="mt-3 text-xs font-medium text-muted-foreground">Seeded demo data</div>
-                    )}
-                  </Link>
+                    <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
+                      Open structure <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </div>
+                  </a>
                 );
               })}
             </div>
