@@ -80,6 +80,7 @@ const parentCards = [
     enabled: false,
   },
 ];
+type ParentCard = (typeof parentCards)[number];
 
 export const Route = createFileRoute("/subhub")({
   head: () => ({
@@ -99,6 +100,8 @@ function SubHub() {
   const [selectedParentCode, setSelectedParentCode] = useState("FL-RVN");
   const [showCreator, setShowCreator] = useState(false);
   const [selectedParent, setSelectedParent] = useState("");
+  const [parentDefinitions, setParentDefinitions] = useState<ParentCard[]>(parentCards);
+  const [showParentCreator, setShowParentCreator] = useState(false);
 
   useEffect(() => {
     setSignedIn(window.localStorage.getItem(SESSION_KEY) === "true");
@@ -133,7 +136,7 @@ function SubHub() {
           <p className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Modules</p>
           <div className="flex items-center gap-3 rounded-md bg-sidebar-accent px-3 py-2 text-sm font-medium text-sidebar-primary">
             <Layers3 className="size-4" />
-            Part Families
+            Bills of Materials
           </div>
         </nav>
         <div className="border-t border-sidebar-border p-3">
@@ -166,8 +169,7 @@ function SubHub() {
           <div className="flex items-center gap-4">
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">SubHub panel</p>
-              <h1 className="mt-1 text-xl font-semibold">Part Families</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Parent parts, raw subparts, and family variants</p>
+              <h1 className="mt-1 text-xl font-semibold">Bills of Materials</h1>
             </div>
             <Link
               to="/"
@@ -180,16 +182,26 @@ function SubHub() {
         </header>
         <section className="flex-1 space-y-6 p-6">
           <div>
-            <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Step 1 · Choose a parent</p>
-                <h2 className="mt-1 text-lg font-semibold">Parent part creation</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Select a parent part to create or manage its company-specific BOM structure.</p>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold">Parent products</h2>
+              <div className="flex items-center gap-3">
+                <span className="rounded bg-secondary px-2.5 py-1 text-xs font-medium">{parentDefinitions.length} parent products</span>
+                <button type="button" onClick={() => setShowParentCreator((current) => !current)} className="rule-header inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium">
+                  <Plus className="size-4" />
+                  {showParentCreator ? "Close" : "Add parent product"}
+                </button>
               </div>
-              <span className="rounded bg-secondary px-2.5 py-1 text-xs font-medium">{parentCards.length} parent definitions</span>
             </div>
+            {showParentCreator ? (
+              <ParentProductCreator
+                onCreate={(parent) => {
+                  setParentDefinitions((current) => [...current, parent]);
+                  setShowParentCreator(false);
+                }}
+              />
+            ) : null}
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {parentCards.map((parent) => {
+              {parentDefinitions.map((parent) => {
                 const selected = selectedParent === parent.code;
                 return (
                   <Link
@@ -365,6 +377,53 @@ function PartRecipe({ parent }: { parent: ParentPart }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function ParentProductCreator({ onCreate }: { onCreate: (parent: ParentCard) => void }) {
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+  const [description, setDescription] = useState("");
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    onCreate({
+      code: code.trim().toUpperCase(),
+      name: name.trim(),
+      description: description.trim() || "New parent product definition",
+      family: code.trim().toUpperCase(),
+      status: "Not configured",
+      enabled: false,
+    });
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="panel mb-4 border-primary/30 bg-primary/[0.02] p-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-sm font-semibold">Add parent product</h3>
+          <p className="mt-1 text-xs text-muted-foreground">Create the parent definition first, then configure its variants and BOM structure.</p>
+        </div>
+        <button type="submit" disabled={!name.trim() || !code.trim()} className="rule-header inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50">
+          <Plus className="size-4" />
+          Add product
+        </button>
+      </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <label className="text-sm">
+          <span className="mb-1.5 block font-medium">Product name</span>
+          <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Pump Parent" required className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </label>
+        <label className="text-sm">
+          <span className="mb-1.5 block font-medium">Parent code</span>
+          <input value={code} onChange={(event) => setCode(event.target.value)} placeholder="P-PMP" required className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </label>
+        <label className="text-sm">
+          <span className="mb-1.5 block font-medium">Short description</span>
+          <input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Pump assembly definition" className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </label>
+      </div>
+    </form>
   );
 }
 
