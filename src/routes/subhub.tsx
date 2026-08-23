@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Boxes, ChevronRight, CircleDot, Layers3, LogOut, ShieldCheck } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
+import { skus, subparts } from "@/lib/erp-data";
 
 const DEMO_EMAIL = "admin";
 const DEMO_PASSWORD = "admin123";
@@ -21,48 +22,27 @@ type ParentPart = {
   parts: RawPart[];
 };
 
+const floatParents: ParentPart[] = skus.map((sku) => ({
+  code: sku.code,
+  name: sku.name,
+  description: `${sku.company} · Float parent variant`,
+  status: "Active",
+  parts: subparts
+    .filter((part) => part.bom[sku.id])
+    .map((part) => ({
+      code: part.code,
+      name: part.name,
+      material: part.material,
+      qty: part.bom[sku.id] ?? 1,
+    })),
+}));
+
 const families = [
   {
-    code: "K",
-    name: "K Family",
-    description: "Float control assemblies with shared parent-part architecture",
-    parents: [
-      {
-        code: "K-X-001",
-        name: "X Parent — Standard",
-        description: "Base K-family parent part for standard assemblies",
-        status: "Active" as const,
-        parts: [
-          { code: "Y-101", name: "Raw shell", material: "PP Copo", qty: 1 },
-          { code: "Y-102", name: "Pivot pin", material: "SS 304", qty: 1 },
-          { code: "Y-103", name: "Seal gasket", material: "Silicone", qty: 1 },
-          { code: "Y-104", name: "Retainer clip", material: "PP", qty: 2 },
-        ],
-      },
-      {
-        code: "K-X-002",
-        name: "X Parent — Heavy Duty",
-        description: "Reinforced version for high-cycle production",
-        status: "Active" as const,
-        parts: [
-          { code: "Y-101", name: "Raw shell", material: "PP Copo", qty: 1 },
-          { code: "Y-102", name: "Pivot pin", material: "SS 304", qty: 1 },
-          { code: "Y-105", name: "Brass valve seat", material: "Brass", qty: 1 },
-          { code: "Y-106", name: "Locking screw", material: "MS Zinc", qty: 2 },
-        ],
-      },
-      {
-        code: "K-X-003",
-        name: "X Parent — Compact",
-        description: "Compact variant with a reduced subpart combination",
-        status: "Draft" as const,
-        parts: [
-          { code: "Y-101", name: "Raw shell", material: "PP Copo", qty: 1 },
-          { code: "Y-107", name: "Compact arm", material: "POM", qty: 1 },
-          { code: "Y-103", name: "Seal gasket", material: "Silicone", qty: 1 },
-        ],
-      },
-    ],
+    code: "FLOAT",
+    name: "Float Parent",
+    description: "One parent part manufactured for multiple companies with different BOM combinations",
+    parents: floatParents,
   },
 ];
 
