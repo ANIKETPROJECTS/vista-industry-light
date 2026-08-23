@@ -50,6 +50,7 @@ const parentCards = [
   {
     code: "P-FLT",
     name: "Float Parent",
+    image: "/float-parent-parts.png",
     description: "Main parent assembly manufactured for multiple company variants",
     family: "FLOAT",
     status: "Configured",
@@ -62,6 +63,7 @@ const parentCards = [
   {
     code: "P-ARM",
     name: "Float Arm Parent",
+    image: "/float-arm-parent-parts.png",
     description: "Parent definition for arm and pivot assemblies",
     family: "ARM",
     status: "Configured",
@@ -74,6 +76,7 @@ const parentCards = [
   {
     code: "P-VAL",
     name: "Valve Parent",
+    image: "/valve-parent-parts.png",
     description: "Parent definition for valve seat and seal assemblies",
     family: "VALVE",
     status: "Configured",
@@ -86,6 +89,7 @@ const parentCards = [
   {
     code: "P-CAP",
     name: "Cover Parent",
+    image: "/cover-parent-parts.png",
     description: "Parent definition for cover and retainer assemblies",
     family: "COVER",
     status: "Configured",
@@ -229,7 +233,7 @@ function SubHub() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="size-12 overflow-hidden rounded-lg border border-border bg-secondary">
-                        <PartPlaceholderImage />
+                        <img src={parent.image} alt={`${parent.name} component parts`} className="size-full object-contain" />
                       </div>
                     </div>
                     <p className="tabular mt-4 text-[11px] font-semibold text-muted-foreground">{parent.code}</p>
@@ -413,6 +417,7 @@ function ParentProductCreator({ onCreate }: { onCreate: (parent: ParentCard) => 
       family: code.trim().toUpperCase(),
       status: "Not configured",
       enabled: false,
+      image: "/parent-part-placeholder.svg",
     });
   }
 
