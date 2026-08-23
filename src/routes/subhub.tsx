@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Boxes, ChevronRight, CircleDot, Layers3, LogOut, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Boxes, ChevronRight, CircleDot, Layers3, LogOut, Plus, ShieldCheck } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { skus, subparts } from "@/lib/erp-data";
 
@@ -59,7 +59,9 @@ export const Route = createFileRoute("/subhub")({
 function SubHub() {
   const [signedIn, setSignedIn] = useState(false);
   const [ready, setReady] = useState(false);
-  const [selectedParentCode, setSelectedParentCode] = useState("K-X-001");
+  const [parentVariants, setParentVariants] = useState(floatParents);
+  const [selectedParentCode, setSelectedParentCode] = useState("FL-RVN");
+  const [showCreator, setShowCreator] = useState(false);
 
   useEffect(() => {
     setSignedIn(window.localStorage.getItem(SESSION_KEY) === "true");
@@ -143,18 +145,22 @@ function SubHub() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-semibold">K Family</h2>
-                  <span className="rounded bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">3 parent variants</span>
+                  <h2 className="text-base font-semibold">Float Parent</h2>
+                  <span className="rounded bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">{parentVariants.length} company variants</span>
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">{families[0].description}</p>
               </div>
-              <div className="rounded-md bg-muted/60 px-3 py-2 text-right">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Relationship</p>
-                <p className="mt-0.5 text-xs font-medium">1 parent → many raw parts</p>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowCreator((current) => !current)}
+                className="rule-header inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"
+              >
+                <Plus className="size-4" />
+                {showCreator ? "Close creator" : "Create variant"}
+              </button>
             </div>
             <div className="grid gap-3 p-4 lg:grid-cols-3">
-              {families[0].parents.map((parent) => {
+              {parentVariants.map((parent) => {
                 const selected = parent.code === selectedParentCode;
                 return (
                   <button
@@ -186,7 +192,16 @@ function SubHub() {
             </div>
           </div>
 
-          <PartRecipe parent={families[0].parents.find((parent) => parent.code === selectedParentCode) ?? families[0].parents[0]} />
+          {showCreator ? (
+            <VariantCreator
+              onCreate={(parent) => {
+                setParentVariants((current) => [...current, parent]);
+                setSelectedParentCode(parent.code);
+                setShowCreator(false);
+              }}
+            />
+          ) : null}
+          <PartRecipe parent={parentVariants.find((parent) => parent.code === selectedParentCode) ?? parentVariants[0]} />
         </section>
       </main>
     </div>
@@ -249,10 +264,92 @@ function PartRecipe({ parent }: { parent: ParentPart }) {
               ))}
             </div>
           </div>
-          <p className="mt-4 text-center text-xs text-muted-foreground">Each variant in K Family can use a different Y-part combination.</p>
+          <p className="mt-4 text-center text-xs text-muted-foreground">Each company variant can use a different raw subpart combination.</p>
         </div>
       </div>
     </div>
+  );
+}
+
+function VariantCreator({ onCreate }: { onCreate: (parent: ParentPart) => void }) {
+  const [company, setCompany] = useState("");
+  const [product, setProduct] = useState("");
+  const [code, setCode] = useState("");
+  const [selectedParts, setSelectedParts] = useState<string[]>([]);
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const parts = subparts
+      .filter((part) => selectedParts.includes(part.code))
+      .map((part) => ({ code: part.code, name: part.name, material: part.material, qty: 1 }));
+    if (!parts.length) return;
+
+    onCreate({
+      code: code.trim().toUpperCase(),
+      name: product.trim(),
+      description: `${company.trim()} · Float parent variant`,
+      status: "Draft",
+      parts,
+    });
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="panel border-primary/30 bg-primary/[0.02] p-5">
+      <div className="flex flex-wrap items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-sm font-semibold">Create a company BOM variant</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Start with the Float parent, then choose the raw parts needed for this company model.</p>
+        </div>
+        <span className="rounded bg-warning/20 px-2 py-1 text-[11px] font-medium text-warning-foreground">Draft until approved</span>
+      </div>
+      <div className="mt-5 grid gap-4 md:grid-cols-3">
+        <label className="text-sm">
+          <span className="mb-2 block font-medium">Company</span>
+          <input value={company} onChange={(event) => setCompany(event.target.value)} placeholder="Eureka Forbes" required className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </label>
+        <label className="text-sm">
+          <span className="mb-2 block font-medium">Product name</span>
+          <input value={product} onChange={(event) => setProduct(event.target.value)} placeholder="Eureka Reviva Pro" required className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </label>
+        <label className="text-sm">
+          <span className="mb-2 block font-medium">Variant code</span>
+          <input value={code} onChange={(event) => setCode(event.target.value)} placeholder="FL-RVP" required className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </label>
+      </div>
+      <fieldset className="mt-5">
+        <legend className="text-sm font-medium">Select raw subparts</legend>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {subparts.map((part) => {
+            const checked = selectedParts.includes(part.code);
+            return (
+              <label key={part.code} className={`flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2.5 text-sm transition ${checked ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40"}`}>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() =>
+                    setSelectedParts((current) =>
+                      checked ? current.filter((code) => code !== part.code) : [...current, part.code],
+                    )
+                  }
+                  className="size-4 accent-primary"
+                />
+                <span className="min-w-0">
+                  <span className="block font-medium">{part.name}</span>
+                  <span className="tabular block text-[11px] text-muted-foreground">{part.code}</span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+      <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
+        <p className="text-xs text-muted-foreground">{selectedParts.length} raw parts selected · quantities can be refined later</p>
+        <button type="submit" disabled={!selectedParts.length} className="rule-header inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50">
+          <Plus className="size-4" />
+          Add BOM variant
+        </button>
+      </div>
+    </form>
   );
 }
 
