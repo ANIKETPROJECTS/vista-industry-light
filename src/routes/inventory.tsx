@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { ArrowDownCircle, ArrowUpCircle, Boxes, Check, Clock3, Database, Layers3, LogOut, Package, RefreshCw, Search, SlidersHorizontal, X } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 import { num } from "@/lib/erp-data";
@@ -31,7 +31,8 @@ export const Route = createFileRoute("/inventory")({
 });
 
 export function InventoryManagement({ initialView }: { initialView: View }) {
-  const view = initialView;
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const view: View = pathname.endsWith("/history") ? "history" : pathname.endsWith("/adjustment") ? "adjustment" : initialView;
   const [query, setQuery] = useState("");
 
   const filteredProducts = useMemo(() => products.filter((product) => `${product.name} ${product.category} ${product.status}`.toLowerCase().includes(query.toLowerCase())), [query]);
