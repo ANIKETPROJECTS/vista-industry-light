@@ -21,6 +21,7 @@ import { Route as HubCodeRouteImport } from './routes/hub.$code'
 import { Route as PartCodeRouteImport } from './routes/part.$code'
 import { Route as PoIdRouteImport } from './routes/po.$id'
 import { Route as SkuCodeRouteImport } from './routes/sku.$code'
+import { Route as SubhubFloatParentRouteImport } from './routes/subhub.float-parent'
 import { Route as WorkerIdRouteImport } from './routes/worker.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -83,6 +84,11 @@ const SkuCodeRoute = SkuCodeRouteImport.update({
   path: '/sku/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubhubFloatParentRoute = SubhubFloatParentRouteImport.update({
+  id: '/float-parent',
+  path: '/float-parent',
+  getParentRoute: () => SubhubRoute,
+} as any)
 const WorkerIdRoute = WorkerIdRouteImport.update({
   id: '/worker/$id',
   path: '/worker/$id',
@@ -97,11 +103,12 @@ export interface FileRoutesByFullPath {
   '/procurement': typeof ProcurementRoute
   '/production': typeof ProductionRoute
   '/shortages': typeof ShortagesRoute
-  '/subhub': typeof SubhubRoute
+  '/subhub': typeof SubhubRouteWithChildren
   '/hub/$code': typeof HubCodeRoute
   '/part/$code': typeof PartCodeRoute
   '/po/$id': typeof PoIdRoute
   '/sku/$code': typeof SkuCodeRoute
+  '/subhub/float-parent': typeof SubhubFloatParentRoute
   '/worker/$id': typeof WorkerIdRoute
 }
 export interface FileRoutesByTo {
@@ -112,11 +119,12 @@ export interface FileRoutesByTo {
   '/procurement': typeof ProcurementRoute
   '/production': typeof ProductionRoute
   '/shortages': typeof ShortagesRoute
-  '/subhub': typeof SubhubRoute
+  '/subhub': typeof SubhubRouteWithChildren
   '/hub/$code': typeof HubCodeRoute
   '/part/$code': typeof PartCodeRoute
   '/po/$id': typeof PoIdRoute
   '/sku/$code': typeof SkuCodeRoute
+  '/subhub/float-parent': typeof SubhubFloatParentRoute
   '/worker/$id': typeof WorkerIdRoute
 }
 export interface FileRoutesById {
@@ -128,11 +136,12 @@ export interface FileRoutesById {
   '/procurement': typeof ProcurementRoute
   '/production': typeof ProductionRoute
   '/shortages': typeof ShortagesRoute
-  '/subhub': typeof SubhubRoute
+  '/subhub': typeof SubhubRouteWithChildren
   '/hub/$code': typeof HubCodeRoute
   '/part/$code': typeof PartCodeRoute
   '/po/$id': typeof PoIdRoute
   '/sku/$code': typeof SkuCodeRoute
+  '/subhub/float-parent': typeof SubhubFloatParentRoute
   '/worker/$id': typeof WorkerIdRoute
 }
 export interface FileRouteTypes {
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/part/$code'
     | '/po/$id'
     | '/sku/$code'
+    | '/subhub/float-parent'
     | '/worker/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/part/$code'
     | '/po/$id'
     | '/sku/$code'
+    | '/subhub/float-parent'
     | '/worker/$id'
   id:
     | '__root__'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/part/$code'
     | '/po/$id'
     | '/sku/$code'
+    | '/subhub/float-parent'
     | '/worker/$id'
   fileRoutesById: FileRoutesById
 }
@@ -191,7 +203,7 @@ export interface RootRouteChildren {
   ProcurementRoute: typeof ProcurementRoute
   ProductionRoute: typeof ProductionRoute
   ShortagesRoute: typeof ShortagesRoute
-  SubhubRoute: typeof SubhubRoute
+  SubhubRoute: typeof SubhubRouteWithChildren
   HubCodeRoute: typeof HubCodeRoute
   PartCodeRoute: typeof PartCodeRoute
   PoIdRoute: typeof PoIdRoute
@@ -285,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SkuCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subhub/float-parent': {
+      id: '/subhub/float-parent'
+      path: '/float-parent'
+      fullPath: '/subhub/float-parent'
+      preLoaderRoute: typeof SubhubFloatParentRouteImport
+      parentRoute: typeof SubhubRoute
+    }
     '/worker/$id': {
       id: '/worker/$id'
       path: '/worker/$id'
@@ -295,6 +314,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SubhubRouteChildren {
+  SubhubFloatParentRoute: typeof SubhubFloatParentRoute
+}
+
+const SubhubRouteChildren: SubhubRouteChildren = {
+  SubhubFloatParentRoute: SubhubFloatParentRoute,
+}
+
+const SubhubRouteWithChildren =
+  SubhubRoute._addFileChildren(SubhubRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BomRoute: BomRoute,
@@ -303,7 +333,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProcurementRoute: ProcurementRoute,
   ProductionRoute: ProductionRoute,
   ShortagesRoute: ShortagesRoute,
-  SubhubRoute: SubhubRoute,
+  SubhubRoute: SubhubRouteWithChildren,
   HubCodeRoute: HubCodeRoute,
   PartCodeRoute: PartCodeRoute,
   PoIdRoute: PoIdRoute,

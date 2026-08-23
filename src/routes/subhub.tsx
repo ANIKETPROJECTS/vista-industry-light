@@ -97,7 +97,7 @@ function SubHub() {
   const [parentVariants, setParentVariants] = useState(floatParents);
   const [selectedParentCode, setSelectedParentCode] = useState("FL-RVN");
   const [showCreator, setShowCreator] = useState(false);
-  const [selectedParent, setSelectedParent] = useState("P-FLT");
+  const [selectedParent, setSelectedParent] = useState("");
 
   useEffect(() => {
     setSignedIn(window.localStorage.getItem(SESSION_KEY) === "true");
@@ -190,7 +190,7 @@ function SubHub() {
                   <button
                     key={parent.code}
                     type="button"
-                    onClick={() => parent.enabled && setSelectedParent(parent.code)}
+                    onClick={() => parent.enabled && (window.location.href = "/subhub/float-parent")}
                     disabled={!parent.enabled}
                     className={`panel group relative p-4 text-left transition ${
                       selected ? "border-primary bg-primary/[0.04] ring-1 ring-primary/20" : parent.enabled ? "hover:-translate-y-0.5 hover:border-primary/40" : "cursor-not-allowed opacity-65"
@@ -220,7 +220,7 @@ function SubHub() {
             </div>
           </div>
 
-          {selectedParent !== "P-FLT" ? (
+          {selectedParent && selectedParent !== "P-FLT" ? (
             <div className="panel flex min-h-40 items-center justify-center p-6 text-center">
               <div>
                 <Boxes className="mx-auto size-8 text-muted-foreground/60" />
