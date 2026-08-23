@@ -95,17 +95,7 @@ function FloatParentDetails() {
           <Link to="/subhub" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="size-4" /> Back to parent parts
           </Link>
-          <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Parent part details</p>
-               <h1 className="mt-1 text-2xl font-semibold">Float</h1>
-              <p className="mt-1 text-sm text-muted-foreground">One parent part manufactured for multiple companies with different BOM combinations</p>
-            </div>
-           <div className="rounded-md border border-border bg-white px-3 py-2 text-right">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-primary">Company variants</p>
-              <p className="tabular mt-0.5 text-lg font-semibold text-primary">6</p>
-            </div>
-          </div>
+           <h1 className="mt-5 text-2xl font-semibold">Float</h1>
         </header>
 
          <section className="grid gap-6 p-6 lg:grid-cols-[300px_minmax(0,1fr)]">
