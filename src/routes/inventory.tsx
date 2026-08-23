@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDownCircle, ArrowUpCircle, Boxes, Check, ChevronRight, Clock3, Database, Layers3, LogOut, Package, Plus, RefreshCw, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, Boxes, Check, Clock3, Database, Layers3, LogOut, Package, RefreshCw, Search, SlidersHorizontal, X } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
-import { hubs, num, subparts } from "@/lib/erp-data";
+import { num } from "@/lib/erp-data";
 import { Kpi, Panel, Tag } from "@/components/erp/bits";
 
-type View = "overview" | "inventory" | "history" | "adjustment";
+export type View = "inventory" | "history" | "adjustment";
 type InventoryRow = { name: string; category: string; unit: string; quantity: number; batches: number; expiry: string; price: number; status: "Available" | "Low stock" | "Out of stock" };
 
 const products: InventoryRow[] = [
@@ -27,38 +27,35 @@ const movements = [
 
 export const Route = createFileRoute("/inventory")({
   head: () => ({ meta: [{ title: "Inventory Management — Float ERP" }] }),
-  component: InventoryManagement,
+  component: () => <InventoryManagement initialView="inventory" />,
 });
 
-function InventoryManagement() {
-  const [view, setView] = useState<View>("overview");
-  const [activeHub, setActiveHub] = useState(hubs[0]?.code ?? "F8");
+export function InventoryManagement({ initialView }: { initialView: View }) {
+  const view = initialView;
   const [query, setQuery] = useState("");
-  const [showAdjustment, setShowAdjustment] = useState(false);
 
   const filteredProducts = useMemo(() => products.filter((product) => `${product.name} ${product.category} ${product.status}`.toLowerCase().includes(query.toLowerCase())), [query]);
   const totalUnits = products.reduce((sum, product) => sum + product.quantity, 0);
   const stockValue = products.reduce((sum, product) => sum + product.quantity * product.price, 0);
   const lowStock = products.filter((product) => product.status !== "Available").length;
-  const hub = hubs.find((item) => item.code === activeHub) ?? hubs[0];
+  const title = view === "inventory" ? "Inventory" : view === "history" ? "Inventory History" : "Stock Adjustment";
 
   return (
-    <SubHubInventoryShell actions={<button type="button" onClick={() => setShowAdjustment(true)} className="inline-flex items-center gap-2 rounded-md border border-input bg-white px-3 py-2 text-sm"><Plus className="size-4" /> Adjust stock</button>}>
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-white px-6 py-4"><div><h1 className="text-xl font-semibold">Inventory Management</h1><p className="text-sm text-muted-foreground">Hub Manager · stock levels, movements, and adjustments across sub-hubs</p></div></header>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><span>Operations</span><ChevronRight className="size-3" /><span>Inventory</span><ChevronRight className="size-3" /><span className="text-foreground">{view === "overview" ? "Overview" : view === "inventory" ? "Inventory" : view === "history" ? "History" : "Adjust stock"}</span></div>
-        <div className="flex flex-wrap gap-1">
-          {(["overview", "inventory", "history", "adjustment"] as View[]).map((item) => <button key={item} type="button" onClick={() => setView(item)} className={`rounded-md px-3 py-1.5 text-xs font-medium capitalize ${view === item ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>{item === "adjustment" ? "Adjust stock" : item}</button>)}
-        </div>
-      </div>
-      <div className="flex flex-wrap items-center gap-2"><p className="text-sm font-medium">Hub Manager view</p>{hubs.map((item) => <button key={item.code} type="button" onClick={() => setActiveHub(item.code)} className={`rounded-md border px-3 py-1.5 text-xs font-medium ${activeHub === item.code ? "border-primary bg-primary/5 text-primary" : "border-input text-muted-foreground hover:bg-muted"}`}>{item.code}</button>)}<span className="text-xs text-muted-foreground">· {hub?.name}</span></div>
-      {view === "overview" ? <Overview totalUnits={totalUnits} stockValue={stockValue} lowStock={lowStock} setView={setView} /> : null}
+    <SubHubInventoryShell actions={view === "inventory" ? <Link to="/inventory/adjustment" className="inline-flex items-center gap-2 rounded-md border border-input bg-white px-3 py-2 text-sm"><SlidersHorizontal className="size-4" /> Adjust stock</Link> : null}>
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-white px-6 py-4"><div><p className="mb-1 text-xs font-semibold text-muted-foreground">SubHub / Inventory Management</p><h1 className="text-xl font-semibold">{title}</h1><p className="text-sm text-muted-foreground">{view === "inventory" ? "Track current stock, batches, expiry dates, and inventory value." : view === "history" ? "Review every stock movement across products and batches." : "Add stock, remove stock, and record a clear reason for every adjustment."}</p></div></header>
       {view === "inventory" ? <InventoryTable products={filteredProducts} query={query} setQuery={setQuery} /> : null}
       {view === "history" ? <HistoryTable /> : null}
-      {view === "adjustment" ? <Adjustment onSaved={() => setView("history")} /> : null}
-      {showAdjustment ? <AdjustmentDrawer onClose={() => setShowAdjustment(false)} onSaved={() => { setShowAdjustment(false); setView("history"); }} /> : null}
+      {view === "adjustment" ? <Adjustment onSaved={() => {}} /> : null}
     </SubHubInventoryShell>
   );
+}
+
+export function InventoryHistoryPage() {
+  return <InventoryManagement initialView="history" />;
+}
+
+export function InventoryAdjustmentPage() {
+  return <InventoryManagement initialView="adjustment" />;
 }
 
 function SubHubInventoryShell({ actions, children }: { actions?: ReactNode; children: ReactNode }) {

@@ -19,6 +19,8 @@ import { Route as ProductionRouteImport } from './routes/production'
 import { Route as ShortagesRouteImport } from './routes/shortages'
 import { Route as SubhubRouteImport } from './routes/subhub'
 import { Route as HubCodeRouteImport } from './routes/hub.$code'
+import { Route as InventoryAdjustmentRouteImport } from './routes/inventory.adjustment'
+import { Route as InventoryHistoryRouteImport } from './routes/inventory.history'
 import { Route as PartCodeRouteImport } from './routes/part.$code'
 import { Route as PoIdRouteImport } from './routes/po.$id'
 import { Route as SkuCodeRouteImport } from './routes/sku.$code'
@@ -77,6 +79,16 @@ const HubCodeRoute = HubCodeRouteImport.update({
   path: '/hub/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InventoryAdjustmentRoute = InventoryAdjustmentRouteImport.update({
+  id: '/adjustment',
+  path: '/adjustment',
+  getParentRoute: () => InventoryRoute,
+} as any)
+const InventoryHistoryRoute = InventoryHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => InventoryRoute,
+} as any)
 const PartCodeRoute = PartCodeRouteImport.update({
   id: '/part/$code',
   path: '/part/$code',
@@ -117,13 +129,15 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bom': typeof BomRoute
   '/hubs': typeof HubsRoute
-  '/inventory': typeof InventoryRoute
+  '/inventory': typeof InventoryRouteWithChildren
   '/orders': typeof OrdersRoute
   '/procurement': typeof ProcurementRoute
   '/production': typeof ProductionRoute
   '/shortages': typeof ShortagesRoute
   '/subhub': typeof SubhubRouteWithChildren
   '/hub/$code': typeof HubCodeRoute
+  '/inventory/adjustment': typeof InventoryAdjustmentRoute
+  '/inventory/history': typeof InventoryHistoryRoute
   '/part/$code': typeof PartCodeRoute
   '/po/$id': typeof PoIdRoute
   '/sku/$code': typeof SkuCodeRoute
@@ -136,13 +150,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bom': typeof BomRoute
   '/hubs': typeof HubsRoute
-  '/inventory': typeof InventoryRoute
+  '/inventory': typeof InventoryRouteWithChildren
   '/orders': typeof OrdersRoute
   '/procurement': typeof ProcurementRoute
   '/production': typeof ProductionRoute
   '/shortages': typeof ShortagesRoute
   '/subhub': typeof SubhubRouteWithChildren
   '/hub/$code': typeof HubCodeRoute
+  '/inventory/adjustment': typeof InventoryAdjustmentRoute
+  '/inventory/history': typeof InventoryHistoryRoute
   '/part/$code': typeof PartCodeRoute
   '/po/$id': typeof PoIdRoute
   '/sku/$code': typeof SkuCodeRoute
@@ -156,13 +172,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/bom': typeof BomRoute
   '/hubs': typeof HubsRoute
-  '/inventory': typeof InventoryRoute
+  '/inventory': typeof InventoryRouteWithChildren
   '/orders': typeof OrdersRoute
   '/procurement': typeof ProcurementRoute
   '/production': typeof ProductionRoute
   '/shortages': typeof ShortagesRoute
   '/subhub': typeof SubhubRouteWithChildren
   '/hub/$code': typeof HubCodeRoute
+  '/inventory/adjustment': typeof InventoryAdjustmentRoute
+  '/inventory/history': typeof InventoryHistoryRoute
   '/part/$code': typeof PartCodeRoute
   '/po/$id': typeof PoIdRoute
   '/sku/$code': typeof SkuCodeRoute
@@ -184,6 +202,8 @@ export interface FileRouteTypes {
     | '/shortages'
     | '/subhub'
     | '/hub/$code'
+    | '/inventory/adjustment'
+    | '/inventory/history'
     | '/part/$code'
     | '/po/$id'
     | '/sku/$code'
@@ -203,6 +223,8 @@ export interface FileRouteTypes {
     | '/shortages'
     | '/subhub'
     | '/hub/$code'
+    | '/inventory/adjustment'
+    | '/inventory/history'
     | '/part/$code'
     | '/po/$id'
     | '/sku/$code'
@@ -222,6 +244,8 @@ export interface FileRouteTypes {
     | '/shortages'
     | '/subhub'
     | '/hub/$code'
+    | '/inventory/adjustment'
+    | '/inventory/history'
     | '/part/$code'
     | '/po/$id'
     | '/sku/$code'
@@ -235,7 +259,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BomRoute: typeof BomRoute
   HubsRoute: typeof HubsRoute
-  InventoryRoute: typeof InventoryRoute
+  InventoryRoute: typeof InventoryRouteWithChildren
   OrdersRoute: typeof OrdersRoute
   ProcurementRoute: typeof ProcurementRoute
   ProductionRoute: typeof ProductionRoute
@@ -320,6 +344,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HubCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inventory/adjustment': {
+      id: '/inventory/adjustment'
+      path: '/adjustment'
+      fullPath: '/inventory/adjustment'
+      preLoaderRoute: typeof InventoryAdjustmentRouteImport
+      parentRoute: typeof InventoryRoute
+    }
+    '/inventory/history': {
+      id: '/inventory/history'
+      path: '/history'
+      fullPath: '/inventory/history'
+      preLoaderRoute: typeof InventoryHistoryRouteImport
+      parentRoute: typeof InventoryRoute
+    }
     '/part/$code': {
       id: '/part/$code'
       path: '/part/$code'
@@ -372,6 +410,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface InventoryRouteChildren {
+  InventoryAdjustmentRoute: typeof InventoryAdjustmentRoute
+  InventoryHistoryRoute: typeof InventoryHistoryRoute
+}
+
+const InventoryRouteChildren: InventoryRouteChildren = {
+  InventoryAdjustmentRoute: InventoryAdjustmentRoute,
+  InventoryHistoryRoute: InventoryHistoryRoute,
+}
+
+const InventoryRouteWithChildren = InventoryRoute._addFileChildren(
+  InventoryRouteChildren,
+)
+
 interface SubhubRouteChildren {
   SubhubFloatParentRoute: typeof SubhubFloatParentRoute
   SubhubRawMaterialsRoute: typeof SubhubRawMaterialsRoute
@@ -391,7 +443,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BomRoute: BomRoute,
   HubsRoute: HubsRoute,
-  InventoryRoute: InventoryRoute,
+  InventoryRoute: InventoryRouteWithChildren,
   OrdersRoute: OrdersRoute,
   ProcurementRoute: ProcurementRoute,
   ProductionRoute: ProductionRoute,
