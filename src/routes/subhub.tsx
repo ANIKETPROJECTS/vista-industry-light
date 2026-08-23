@@ -229,7 +229,7 @@ function SubHub() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="size-12 overflow-hidden rounded-lg border border-border bg-secondary">
-                        <img src="/parent-part-placeholder.svg" alt="" className="size-full object-cover" />
+                        <PartPlaceholderImage />
                       </div>
                     </div>
                     <p className="tabular mt-4 text-[11px] font-semibold text-muted-foreground">{parent.code}</p>
@@ -443,6 +443,22 @@ function ParentProductCreator({ onCreate }: { onCreate: (parent: ParentCard) => 
         </label>
       </div>
     </form>
+  );
+}
+
+function PartPlaceholderImage() {
+  return (
+    <svg viewBox="0 0 160 120" role="img" aria-label="Illustration of an industrial parent part" className="size-full">
+      <rect width="160" height="120" rx="14" fill="#EAF2F7" />
+      <path d="M25 82.5 58 62l33 20.5L58 103 25 82.5Z" fill="#79A8BF" />
+      <path d="M58 62V23l33 19.5v40L58 62Z" fill="#3C7694" />
+      <path d="M25 82.5v-39L58 23v39L25 82.5Z" fill="#A7C6D4" />
+      <path d="m75 72 33-20.5L141 72l-33 20.5L75 72Z" fill="#D99A45" />
+      <path d="M108 51.5v-19L141 52v20l-33-20.5Z" fill="#B97829" />
+      <path d="M75 72V53l33-21v19.5L75 72Z" fill="#F0BD70" />
+      <circle cx="57.5" cy="42.5" r="8" fill="#EAF2F7" fillOpacity=".85" />
+      <circle cx="108" cy="51.5" r="5" fill="#FFF4DF" />
+    </svg>
   );
 }
 
