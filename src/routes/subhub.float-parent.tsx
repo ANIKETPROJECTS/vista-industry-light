@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Boxes, CheckCircle2, ChevronRight, Layers3, LogOut } from "lucide-react";
+import { ArrowLeft, Boxes, CheckCircle2, ChevronRight, Layers3, LogOut, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { skus, subparts } from "@/lib/erp-data";
 
@@ -32,7 +32,9 @@ export const Route = createFileRoute("/subhub/float-parent")({
 function FloatParentDetails() {
   const [signedIn, setSignedIn] = useState(false);
   const [ready, setReady] = useState(false);
+  const [variants, setVariants] = useState(parentVariants);
   const [selectedCode, setSelectedCode] = useState("FL-RVN");
+  const [showVariantCreator, setShowVariantCreator] = useState(false);
 
   useEffect(() => {
     setSignedIn(window.localStorage.getItem(SESSION_KEY) === "true");
@@ -53,7 +55,7 @@ function FloatParentDetails() {
     );
   }
 
-  const selected = parentVariants.find((variant) => variant.code === selectedCode) ?? parentVariants[0];
+  const selected = variants.find((variant) => variant.code === selectedCode) ?? variants[0];
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -99,82 +101,32 @@ function FloatParentDetails() {
               <h1 className="mt-1 text-2xl font-semibold">Float Parent</h1>
               <p className="mt-1 text-sm text-muted-foreground">One parent part manufactured for multiple companies with different BOM combinations</p>
             </div>
-            <div className="rounded-md bg-primary/10 px-3 py-2 text-right">
+           <div className="rounded-md border border-border bg-white px-3 py-2 text-right">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-primary">Company variants</p>
               <p className="tabular mt-0.5 text-lg font-semibold text-primary">6</p>
             </div>
           </div>
         </header>
 
-        <section className="space-y-6 p-6">
-          <div className="panel overflow-hidden">
-            <div className="flex items-center gap-3 border-b border-border px-5 py-3.5">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary"><Layers3 className="size-4" /></div>
-              <div className="min-w-0 flex-1">
-                <h2 className="text-sm font-semibold">Company-specific BOM variants</h2>
-                <p className="text-xs text-muted-foreground">Select a product to inspect its raw subpart combination</p>
-              </div>
-              <span className="rounded bg-success/10 px-2 py-1 text-[11px] font-medium text-success">Float configured</span>
-            </div>
-            <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
-              {parentVariants.map((variant) => {
-                const active = variant.code === selectedCode;
-                return (
-                  <button type="button" key={variant.code} onClick={() => setSelectedCode(variant.code)} className={`rounded-lg border p-4 text-left transition ${active ? "border-primary bg-primary/5 ring-1 ring-primary/20" : "border-border hover:border-primary/40 hover:bg-muted/40"}`}>
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="tabular text-xs font-semibold text-muted-foreground">{variant.code}</p>
-                        <p className="mt-1 text-sm font-semibold">{variant.name}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">{variant.company}</p>
-                      </div>
-                      <CheckCircle2 className={`size-4 ${active ? "text-success" : "text-muted-foreground/40"}`} />
-                    </div>
-                    <div className="mt-4 flex items-center justify-between border-t border-border/70 pt-3 text-xs">
-                      <span className="text-muted-foreground">{variant.parts.length} raw subparts</span>
-                      <ChevronRight className={`size-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(280px,0.6fr)]">
-            <div className="panel overflow-hidden">
-              <header className="border-b border-border px-5 py-3.5">
-                <h2 className="text-sm font-semibold">{selected.name} · raw subpart combination</h2>
-                <p className="text-xs text-muted-foreground">{selected.company} · components required to manufacture {selected.code}</p>
-              </header>
-              <table className="w-full text-sm">
-                <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                  <tr><th className="px-5 py-3 font-medium">Raw subpart</th><th className="px-5 py-3 font-medium">Material</th><th className="px-5 py-3 text-right font-medium">Qty / parent</th></tr>
-                </thead>
-                <tbody>
-                  {selected.parts.map((part) => (
-                    <tr key={part.code} className="border-b border-border/70 last:border-0">
-                      <td className="px-5 py-3"><p className="font-medium">{part.name}</p><p className="tabular text-xs text-muted-foreground">{part.code}</p></td>
-                      <td className="px-5 py-3 text-muted-foreground">{part.material}</td>
-                      <td className="tabular px-5 py-3 text-right font-semibold">×{part.qty}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="panel p-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Architecture</p>
-              <div className="mt-5 rounded-lg border-2 border-primary/30 bg-primary/5 p-4 text-center">
-                <p className="tabular text-xs font-semibold text-primary">FLOAT</p>
-                <p className="mt-1 text-sm font-semibold">Float Parent</p>
-                <p className="mt-1 text-xs text-muted-foreground">Finished parent part</p>
-              </div>
-              <div className="my-3 text-center text-lg text-primary">↓</div>
-              <div className="space-y-2">
-                {selected.parts.map((part) => <div key={part.code} className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-xs"><span>{part.name}</span><span className="tabular text-muted-foreground">×{part.qty}</span></div>)}
-              </div>
-              <p className="mt-4 text-xs leading-5 text-muted-foreground">The parent stays the same while each company variant controls its own raw subpart combination.</p>
-            </div>
-          </div>
-        </section>
+         <section className="grid gap-6 p-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+           <aside className="panel h-fit overflow-hidden">
+             <div className="flex items-center gap-3 border-b border-border px-4 py-4">
+               <div className="min-w-0 flex-1"><h2 className="text-sm font-semibold">Company BOM variants</h2><p className="mt-1 text-xs text-muted-foreground">{variants.length} variants</p></div>
+               <button type="button" onClick={() => setShowVariantCreator(true)} aria-label="Create variant" className="rounded-md border border-input bg-white p-2 text-foreground hover:bg-muted"><Plus className="size-4" /></button>
+             </div>
+             <div className="space-y-1 p-2">
+               {variants.map((variant) => {
+                 const active = variant.code === selected.code;
+                 return <button type="button" key={variant.code} onClick={() => setSelectedCode(variant.code)} className={`w-full rounded-md border p-3 text-left transition ${active ? "border-primary bg-primary/5" : "border-transparent hover:border-border hover:bg-muted/40"}`}><div className="flex items-center justify-between gap-2"><p className="tabular text-xs font-semibold text-muted-foreground">{variant.code}</p><CheckCircle2 className={`size-4 ${active ? "text-success" : "text-muted-foreground/30"}`} /></div><p className="mt-1 text-sm font-semibold">{variant.name}</p><p className="mt-1 text-xs text-muted-foreground">{variant.company}</p><p className="mt-3 border-t border-border/70 pt-2 text-xs text-muted-foreground">{variant.parts.length} raw subparts</p></button>;
+               })}
+             </div>
+           </aside>
+           <div className="panel h-fit overflow-hidden">
+             <header className="border-b border-border px-5 py-4"><p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Raw subparts</p><h2 className="mt-1 text-lg font-semibold">{selected.name}</h2><p className="mt-1 text-sm text-muted-foreground">{selected.company} · components required to manufacture {selected.code}</p></header>
+             <table className="w-full text-sm"><thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground"><tr><th className="px-5 py-3 font-medium">Raw subpart</th><th className="px-5 py-3 font-medium">Material</th><th className="px-5 py-3 text-right font-medium">Qty / parent</th></tr></thead><tbody>{selected.parts.map((part) => <tr key={part.code} className="border-b border-border/70 last:border-0"><td className="px-5 py-4"><p className="font-medium">{part.name}</p><p className="tabular text-xs text-muted-foreground">{part.code}</p></td><td className="px-5 py-4 text-muted-foreground">{part.material}</td><td className="tabular px-5 py-4 text-right font-semibold">×{part.qty}</td></tr>)}</tbody></table>
+           </div>
+         </section>
+         {showVariantCreator ? <VariantCreatorModal onClose={() => setShowVariantCreator(false)} onCreate={(variant) => { setVariants((current) => [...current, variant]); setSelectedCode(variant.code); setShowVariantCreator(false); }} /> : null}
       </main>
     </div>
   );
