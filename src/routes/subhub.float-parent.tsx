@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Boxes, ChevronRight, Layers3, LogOut, Plus, Search } from "lucide-react";
+import { ArrowLeft, Boxes, ChevronRight, Layers3, LogOut, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { skus, subparts } from "@/lib/erp-data";
 
@@ -35,6 +35,7 @@ function FloatParentDetails() {
   const [variants, setVariants] = useState(parentVariants);
   const [selectedCode, setSelectedCode] = useState("FL-RVN");
   const [showVariantCreator, setShowVariantCreator] = useState(false);
+  const [editingVariant, setEditingVariant] = useState<Variant | null>(null);
   const [variantSearch, setVariantSearch] = useState("");
 
   useEffect(() => {
@@ -111,7 +112,7 @@ function FloatParentDetails() {
              <div className="space-y-1 p-2">
                 {filteredVariants.map((variant) => {
                  const active = variant.code === selected.code;
-                  return <button type="button" key={variant.code} onClick={() => setSelectedCode(variant.code)} className={`w-full rounded-md border p-3 text-left transition ${active ? "border-primary bg-primary/5" : "border-transparent hover:border-border hover:bg-muted/40"}`}><p className="tabular text-xs font-semibold text-muted-foreground">{variant.code}</p><p className="mt-1 text-sm font-semibold">{variant.name}</p><p className="mt-1 text-xs text-muted-foreground">{variant.company}</p></button>;
+                  return <div key={variant.code} className={`rounded-md border p-3 transition ${active ? "border-primary bg-primary/5" : "border-transparent hover:border-border hover:bg-muted/40"}`}><button type="button" onClick={() => setSelectedCode(variant.code)} className="w-full text-left"><p className="tabular text-xs font-semibold text-muted-foreground">{variant.code}</p><p className="mt-1 text-sm font-semibold">{variant.name}</p><p className="mt-1 text-xs text-muted-foreground">{variant.company}</p></button><div className="mt-3 flex justify-end gap-1 border-t border-border/70 pt-2"><button type="button" aria-label={`Edit ${variant.name}`} onClick={() => { setEditingVariant(variant); setShowVariantCreator(true); }} className="rounded-md p-1.5 text-muted-foreground hover:bg-white hover:text-foreground"><Pencil className="size-3.5" /></button><button type="button" aria-label={`Delete ${variant.name}`} onClick={() => { if (window.confirm(`Delete ${variant.name}?`)) { setVariants((current) => current.filter((item) => item.code !== variant.code)); if (selectedCode === variant.code) setSelectedCode(variants.find((item) => item.code !== variant.code)?.code ?? ""); } }} className="rounded-md p-1.5 text-muted-foreground hover:bg-white hover:text-destructive"><Trash2 className="size-3.5" /></button></div></div>;
                })}
              </div>
            </aside>
@@ -120,7 +121,7 @@ function FloatParentDetails() {
              <table className="w-full text-sm"><thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground"><tr><th className="px-5 py-3 font-medium">Raw subpart</th><th className="px-5 py-3 font-medium">Material</th><th className="px-5 py-3 text-right font-medium">Qty / parent</th></tr></thead><tbody>{selected.parts.map((part) => <tr key={part.code} className="border-b border-border/70 last:border-0"><td className="px-5 py-4"><p className="font-medium">{part.name}</p><p className="tabular text-xs text-muted-foreground">{part.code}</p></td><td className="px-5 py-4 text-muted-foreground">{part.material}</td><td className="tabular px-5 py-4 text-right font-semibold">×{part.qty}</td></tr>)}</tbody></table>
            </div>
          </section>
-         {showVariantCreator ? <VariantCreatorModal onClose={() => setShowVariantCreator(false)} onCreate={(variant) => { setVariants((current) => [...current, variant]); setSelectedCode(variant.code); setShowVariantCreator(false); }} /> : null}
+          {showVariantCreator ? <VariantCreatorModal initialVariant={editingVariant} onClose={() => { setShowVariantCreator(false); setEditingVariant(null); }} onCreate={(variant) => { setVariants((current) => editingVariant ? current.map((item) => item.code === editingVariant.code ? variant : item) : [...current, variant]); setSelectedCode(variant.code); setShowVariantCreator(false); setEditingVariant(null); }} /> : null}
       </main>
     </div>
   );
@@ -128,11 +129,11 @@ function FloatParentDetails() {
 
 type Variant = (typeof parentVariants)[number];
 
-function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCreate: (variant: Variant) => void }) {
-  const [company, setCompany] = useState("");
-  const [product, setProduct] = useState("");
-  const [code, setCode] = useState("");
-  const [partQuantities, setPartQuantities] = useState<Record<string, number>>({});
+function VariantCreatorModal({ initialVariant, onClose, onCreate }: { initialVariant?: Variant | null; onClose: () => void; onCreate: (variant: Variant) => void }) {
+  const [company, setCompany] = useState(initialVariant?.company ?? "");
+  const [product, setProduct] = useState(initialVariant?.name ?? "");
+  const [code, setCode] = useState(initialVariant?.code ?? "");
+  const [partQuantities, setPartQuantities] = useState<Record<string, number>>(Object.fromEntries((initialVariant?.parts ?? []).map((part) => [part.code, part.qty])));
   const [partSearch, setPartSearch] = useState("");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -160,7 +161,7 @@ function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCre
       <form onSubmit={handleSubmit} className="flex h-full max-h-screen w-full max-w-md flex-col overflow-y-auto rounded-l-xl border-y border-l border-border bg-white p-6 shadow-xl">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 id="create-variant-title" className="text-lg font-semibold">Create variant</h2>
+            <h2 id="create-variant-title" className="text-lg font-semibold">{initialVariant ? "Edit variant" : "Create variant"}</h2>
             <p className="mt-1 text-sm text-muted-foreground">Add a company-specific BOM variant.</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close" className="rounded-md px-2 py-1 text-xl leading-none text-muted-foreground hover:bg-muted hover:text-foreground">×</button>

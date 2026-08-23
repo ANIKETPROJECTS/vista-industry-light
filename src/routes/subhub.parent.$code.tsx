@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Boxes, Layers3, LogOut, Plus, Search } from "lucide-react";
+import { ArrowLeft, Boxes, Layers3, LogOut, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 
 const SESSION_KEY = "float-subhub-demo-session";
@@ -49,6 +49,7 @@ function ParentDetails() {
   const [selectedCode, setSelectedCode] = useState(parent?.variants[0]?.code ?? "");
   const [variantSearch, setVariantSearch] = useState("");
   const [showVariantCreator, setShowVariantCreator] = useState(false);
+  const [editingVariant, setEditingVariant] = useState<Variant | null>(null);
 
   useEffect(() => {
     setSignedIn(window.localStorage.getItem(SESSION_KEY) === "true");
@@ -63,9 +64,10 @@ function ParentDetails() {
   const filteredVariants = variants.filter((variant) => `${variant.code} ${variant.name} ${variant.company}`.toLowerCase().includes(variantSearch.toLowerCase()));
   const availableParts = Array.from(new Map(parent.variants.flatMap((variant) => variant.parts).map((part) => [part.code, part])).values());
   function createVariant(variant: Variant) {
-    setVariants((current) => [...current, variant]);
+    setVariants((current) => editingVariant ? current.map((item) => item.code === editingVariant.code ? variant : item) : [...current, variant]);
     setSelectedCode(variant.code);
     setShowVariantCreator(false);
+    setEditingVariant(null);
   }
 
   return (
