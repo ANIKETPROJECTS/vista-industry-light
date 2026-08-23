@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Boxes, CheckCircle2, ChevronRight, Layers3, LogOut, Plus } from "lucide-react";
+import { ArrowLeft, Boxes, ChevronRight, Layers3, LogOut, Plus, Search } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { skus, subparts } from "@/lib/erp-data";
 
@@ -35,6 +35,7 @@ function FloatParentDetails() {
   const [variants, setVariants] = useState(parentVariants);
   const [selectedCode, setSelectedCode] = useState("FL-RVN");
   const [showVariantCreator, setShowVariantCreator] = useState(false);
+  const [variantSearch, setVariantSearch] = useState("");
 
   useEffect(() => {
     setSignedIn(window.localStorage.getItem(SESSION_KEY) === "true");
@@ -56,6 +57,7 @@ function FloatParentDetails() {
   }
 
   const selected = variants.find((variant) => variant.code === selectedCode) ?? variants[0];
+  const filteredVariants = variants.filter((variant) => `${variant.code} ${variant.name} ${variant.company}`.toLowerCase().includes(variantSearch.toLowerCase()));
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -99,14 +101,17 @@ function FloatParentDetails() {
 
          <section className="grid gap-6 p-6 lg:grid-cols-[300px_minmax(0,1fr)]">
            <aside className="panel h-fit overflow-hidden">
-             <div className="flex items-center gap-3 border-b border-border px-4 py-4">
+              <div className="border-b border-border px-4 py-4">
+                <div className="flex items-center gap-3">
                <div className="min-w-0 flex-1"><h2 className="text-sm font-semibold">Company BOM variants</h2><p className="mt-1 text-xs text-muted-foreground">{variants.length} variants</p></div>
                <button type="button" onClick={() => setShowVariantCreator(true)} aria-label="Create variant" className="rounded-md border border-input bg-white p-2 text-foreground hover:bg-muted"><Plus className="size-4" /></button>
+                </div>
+                <label className="relative mt-3 block"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><input value={variantSearch} onChange={(event) => setVariantSearch(event.target.value)} placeholder="Search variants" className="h-9 w-full rounded-md border border-input bg-white pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></label>
              </div>
              <div className="space-y-1 p-2">
-               {variants.map((variant) => {
+                {filteredVariants.map((variant) => {
                  const active = variant.code === selected.code;
-                 return <button type="button" key={variant.code} onClick={() => setSelectedCode(variant.code)} className={`w-full rounded-md border p-3 text-left transition ${active ? "border-primary bg-primary/5" : "border-transparent hover:border-border hover:bg-muted/40"}`}><div className="flex items-center justify-between gap-2"><p className="tabular text-xs font-semibold text-muted-foreground">{variant.code}</p><CheckCircle2 className={`size-4 ${active ? "text-success" : "text-muted-foreground/30"}`} /></div><p className="mt-1 text-sm font-semibold">{variant.name}</p><p className="mt-1 text-xs text-muted-foreground">{variant.company}</p><p className="mt-3 border-t border-border/70 pt-2 text-xs text-muted-foreground">{variant.parts.length} raw subparts</p></button>;
+                  return <button type="button" key={variant.code} onClick={() => setSelectedCode(variant.code)} className={`w-full rounded-md border p-3 text-left transition ${active ? "border-primary bg-primary/5" : "border-transparent hover:border-border hover:bg-muted/40"}`}><p className="tabular text-xs font-semibold text-muted-foreground">{variant.code}</p><p className="mt-1 text-sm font-semibold">{variant.name}</p><p className="mt-1 text-xs text-muted-foreground">{variant.company}</p></button>;
                })}
              </div>
            </aside>
@@ -149,8 +154,8 @@ function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCre
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4" role="dialog" aria-modal="true" aria-labelledby="create-variant-title">
-      <form onSubmit={handleSubmit} className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl border border-border bg-white p-6 shadow-xl">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/20" role="dialog" aria-modal="true" aria-labelledby="create-variant-title">
+      <form onSubmit={handleSubmit} className="h-full max-h-screen w-full max-w-md overflow-y-auto rounded-l-xl border-y border-l border-border bg-white p-6 shadow-xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id="create-variant-title" className="text-lg font-semibold">Create variant</h2>

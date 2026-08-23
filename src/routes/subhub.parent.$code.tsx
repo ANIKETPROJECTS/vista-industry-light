@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Boxes, CheckCircle2, Layers3, LogOut, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowLeft, Boxes, Layers3, LogOut, Plus, Search } from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
 
 const SESSION_KEY = "float-subhub-demo-session";
 
@@ -47,6 +47,8 @@ function ParentDetails() {
   const [ready, setReady] = useState(false);
   const [variants, setVariants] = useState<Variant[]>(parent?.variants ?? []);
   const [selectedCode, setSelectedCode] = useState(parent?.variants[0]?.code ?? "");
+  const [variantSearch, setVariantSearch] = useState("");
+  const [showVariantCreator, setShowVariantCreator] = useState(false);
 
   useEffect(() => {
     setSignedIn(window.localStorage.getItem(SESSION_KEY) === "true");
@@ -58,11 +60,12 @@ function ParentDetails() {
   if (!signedIn) return <main className="flex min-h-screen items-center justify-center bg-white text-center"><div><p className="text-sm text-muted-foreground">Sign in to view this product structure.</p><Link to="/subhub" className="mt-4 inline-flex items-center gap-2 rounded-md border border-input bg-white px-4 py-2 text-sm font-medium"><ArrowLeft className="size-4" /> Go to SubHub</Link></div></main>;
 
   const selected = variants.find((variant) => variant.code === selectedCode) ?? variants[0];
-  function createVariant() {
-    const next = variants.length + 1;
-    const variant = { code: `${code.replace("P-", "")}-NEW${next}`, name: `New ${parent.name} variant`, company: "New company", parts: [{ code: `${code}-001`, name: `${parent.name} body`, material: "POM", qty: 1 }] };
+  const filteredVariants = variants.filter((variant) => `${variant.code} ${variant.name} ${variant.company}`.toLowerCase().includes(variantSearch.toLowerCase()));
+  const availableParts = Array.from(new Map(parent.variants.flatMap((variant) => variant.parts).map((part) => [part.code, part])).values());
+  function createVariant(variant: Variant) {
     setVariants((current) => [...current, variant]);
     setSelectedCode(variant.code);
+    setShowVariantCreator(false);
   }
 
   return (
@@ -75,10 +78,23 @@ function ParentDetails() {
       <main className="min-w-0 flex-1">
         <header className="h-[65px] border-b border-border bg-white px-6"><Link to="/subhub" className="inline-flex h-full items-center gap-2 text-lg font-semibold text-foreground hover:text-primary"><ArrowLeft className="size-4" /> {parent.name}</Link></header>
         <section className="grid gap-6 bg-white p-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-          <aside className="panel h-fit overflow-hidden"><div className="flex items-center gap-3 border-b border-border px-4 py-4"><div className="min-w-0 flex-1"><h2 className="text-sm font-semibold">Company BOM variants</h2><p className="mt-1 text-xs text-muted-foreground">{variants.length} variants</p></div><button type="button" onClick={createVariant} aria-label="Create variant" className="rounded-md border border-input bg-white p-2 hover:bg-muted"><Plus className="size-4" /></button></div><div className="space-y-1 p-2">{variants.map((variant) => <button type="button" key={variant.code} onClick={() => setSelectedCode(variant.code)} className={`w-full rounded-md border p-3 text-left transition ${selected.code === variant.code ? "border-primary bg-primary/5" : "border-transparent hover:border-border hover:bg-muted/40"}`}><div className="flex items-center justify-between gap-2"><p className="tabular text-xs font-semibold text-muted-foreground">{variant.code}</p><CheckCircle2 className={`size-4 ${selected.code === variant.code ? "text-success" : "text-muted-foreground/30"}`} /></div><p className="mt-1 text-sm font-semibold">{variant.name}</p><p className="mt-1 text-xs text-muted-foreground">{variant.company}</p><p className="mt-3 border-t border-border/70 pt-2 text-xs text-muted-foreground">{variant.parts.length} raw subparts</p></button>)}</div></aside>
+          <aside className="panel h-fit overflow-hidden"><div className="border-b border-border px-4 py-4"><div className="flex items-center gap-3"><div className="min-w-0 flex-1"><h2 className="text-sm font-semibold">Company BOM variants</h2><p className="mt-1 text-xs text-muted-foreground">{variants.length} variants</p></div><button type="button" onClick={() => setShowVariantCreator(true)} aria-label="Create variant" className="rounded-md border border-input bg-white p-2 hover:bg-muted"><Plus className="size-4" /></button></div><label className="relative mt-3 block"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><input value={variantSearch} onChange={(event) => setVariantSearch(event.target.value)} placeholder="Search variants" className="h-9 w-full rounded-md border border-input bg-white pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></label></div><div className="space-y-1 p-2">{filteredVariants.map((variant) => <button type="button" key={variant.code} onClick={() => setSelectedCode(variant.code)} className={`w-full rounded-md border p-3 text-left transition ${selected.code === variant.code ? "border-primary bg-primary/5" : "border-transparent hover:border-border hover:bg-muted/40"}`}><p className="tabular text-xs font-semibold text-muted-foreground">{variant.code}</p><p className="mt-1 text-sm font-semibold">{variant.name}</p><p className="mt-1 text-xs text-muted-foreground">{variant.company}</p></button>)}</div></aside>
           <div className="panel h-fit overflow-hidden"><header className="border-b border-border px-5 py-4"><p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Raw subparts</p><h2 className="mt-1 text-lg font-semibold">{selected.name}</h2><p className="mt-1 text-sm text-muted-foreground">{selected.company} · {selected.code}</p></header><table className="w-full text-sm"><thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground"><tr><th className="px-5 py-3 font-medium">Raw subpart</th><th className="px-5 py-3 font-medium">Material</th><th className="px-5 py-3 text-right font-medium">Qty / parent</th></tr></thead><tbody>{selected.parts.map((part) => <tr key={part.code} className="border-b border-border/70 last:border-0"><td className="px-5 py-4"><p className="font-medium">{part.name}</p><p className="tabular text-xs text-muted-foreground">{part.code}</p></td><td className="px-5 py-4 text-muted-foreground">{part.material}</td><td className="tabular px-5 py-4 text-right font-semibold">×{part.qty}</td></tr>)}</tbody></table></div>
         </section>
-      </main>
+        {showVariantCreator ? <VariantDrawer parentName={parent.name} prefix={code} availableParts={availableParts} onClose={() => setShowVariantCreator(false)} onCreate={createVariant} /> : null}
+       </main>
     </div>
   );
+}
+
+function VariantDrawer({ parentName, prefix, availableParts, onClose, onCreate }: { parentName: string; prefix: string; availableParts: Part[]; onClose: () => void; onCreate: (variant: Variant) => void }) {
+  const [company, setCompany] = useState("");
+  const [name, setName] = useState("");
+  const [variantCode, setVariantCode] = useState("");
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    onCreate({ code: variantCode.trim().toUpperCase(), name: name.trim(), company: company.trim(), parts: availableParts.filter((part) => quantities[part.code]).map((part) => ({ ...part, qty: quantities[part.code] })) });
+  }
+  return <div className="fixed inset-0 z-50 flex justify-end bg-black/20" role="dialog" aria-modal="true"><form onSubmit={submit} className="h-full w-full max-w-md overflow-y-auto rounded-l-xl border-y border-l border-border bg-white p-6 shadow-xl"><div className="flex items-start justify-between"><div><h2 className="text-lg font-semibold">Create variant</h2><p className="mt-1 text-sm text-muted-foreground">Add a {parentName} company-specific BOM.</p></div><button type="button" onClick={onClose} className="text-xl text-muted-foreground">×</button></div><label className="mt-6 block text-sm font-medium">Company<input required value={company} onChange={(event) => setCompany(event.target.value)} className="mt-1 h-10 w-full rounded-md border border-input px-3 font-normal" /></label><label className="mt-4 block text-sm font-medium">Variant name<input required value={name} onChange={(event) => setName(event.target.value)} className="mt-1 h-10 w-full rounded-md border border-input px-3 font-normal" /></label><label className="mt-4 block text-sm font-medium">Variant code<input required placeholder={`${prefix}-NEW`} value={variantCode} onChange={(event) => setVariantCode(event.target.value)} className="mt-1 h-10 w-full rounded-md border border-input px-3 font-normal" /></label><div className="mt-6"><p className="text-sm font-medium">Raw parts and quantities</p><div className="mt-3 space-y-2">{availableParts.map((part) => { const checked = Boolean(quantities[part.code]); return <div key={part.code} className="flex items-center gap-3 rounded-md border border-border p-3"><input type="checkbox" checked={checked} onChange={(event) => setQuantities((current) => event.target.checked ? { ...current, [part.code]: 1 } : Object.fromEntries(Object.entries(current).filter(([key]) => key !== part.code)))} /><span className="min-w-0 flex-1 text-sm">{part.name}<small className="block text-xs text-muted-foreground">{part.code} · {part.material}</small></span><input type="number" min="1" disabled={!checked} value={quantities[part.code] ?? 1} onChange={(event) => setQuantities((current) => ({ ...current, [part.code]: Math.max(1, Number(event.target.value) || 1) }))} className="h-8 w-16 rounded-md border border-input text-center disabled:opacity-40" /></div>; })}</div></div><div className="mt-6 flex justify-end gap-3"><button type="button" onClick={onClose} className="rounded-md border border-input px-4 py-2 text-sm">Cancel</button><button type="submit" disabled={!Object.keys(quantities).length} className="rounded-md border border-input px-4 py-2 text-sm disabled:opacity-50">Create variant</button></div></form></div>;
 }
