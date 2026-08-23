@@ -11,6 +11,7 @@ import {
   Bell,
   Search,
   Settings,
+  Boxes,
 } from "lucide-react";
 
 const nav = [
@@ -21,6 +22,7 @@ const nav = [
   { to: "/shortages", label: "Shortages", icon: AlertTriangle },
   { to: "/procurement", label: "Procurement", icon: Truck },
   { to: "/production", label: "Production & Workforce", icon: Users },
+  { to: "/subhub", label: "SubHub", icon: Boxes },
 ] as const;
 
 export function Shell({
