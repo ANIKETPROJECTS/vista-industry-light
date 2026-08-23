@@ -54,6 +54,10 @@ const parentCards = [
     family: "FLOAT",
     status: "Configured",
     enabled: true,
+    variants: 6,
+    subparts: 11,
+    owner: "Production engineering",
+    updated: "23 Aug 2026",
   },
   {
     code: "P-ARM",
@@ -62,6 +66,10 @@ const parentCards = [
     family: "ARM",
     status: "Not configured",
     enabled: false,
+    variants: 3,
+    subparts: 7,
+    owner: "Assembly engineering",
+    updated: "20 Aug 2026",
   },
   {
     code: "P-VAL",
@@ -70,6 +78,10 @@ const parentCards = [
     family: "VALVE",
     status: "Not configured",
     enabled: false,
+    variants: 4,
+    subparts: 9,
+    owner: "Molding engineering",
+    updated: "18 Aug 2026",
   },
   {
     code: "P-CAP",
@@ -78,6 +90,10 @@ const parentCards = [
     family: "COVER",
     status: "Not configured",
     enabled: false,
+    variants: 2,
+    subparts: 5,
+    owner: "Tooling engineering",
+    updated: "15 Aug 2026",
   },
 ];
 type ParentCard = (typeof parentCards)[number];
@@ -222,12 +238,25 @@ function SubHub() {
                     <p className="tabular mt-4 text-[11px] font-semibold text-muted-foreground">{parent.code}</p>
                     <p className="mt-1 text-sm font-semibold">{parent.name}</p>
                     <p className="mt-1 min-h-10 text-xs leading-5 text-muted-foreground">{parent.description}</p>
+                    <div className="mt-3 grid grid-cols-2 gap-2 border-t border-border/70 pt-3">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Variants</p>
+                        <p className="tabular mt-0.5 text-xs font-semibold">{parent.variants}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Raw parts</p>
+                        <p className="tabular mt-0.5 text-xs font-semibold">{parent.subparts}</p>
+                      </div>
+                    </div>
+                    <p className="mt-2 truncate text-[11px] text-muted-foreground">
+                      Owner: {parent.owner} · Updated {parent.updated}
+                    </p>
                     {parent.enabled ? (
                       <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
                         Open structure <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                       </div>
                     ) : (
-                      <div className="mt-3 text-xs text-muted-foreground">Available next</div>
+                      <div className="mt-3 text-xs font-medium text-muted-foreground">Seeded demo data</div>
                     )}
                   </Link>
                 );
