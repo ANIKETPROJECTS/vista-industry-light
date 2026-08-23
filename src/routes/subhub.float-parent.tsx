@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Boxes, CheckCircle2, ChevronRight, Layers3, LogOut, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { skus, subparts } from "@/lib/erp-data";
 
 const SESSION_KEY = "float-subhub-demo-session";
@@ -98,7 +98,7 @@ function FloatParentDetails() {
           <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Parent part details</p>
-              <h1 className="mt-1 text-2xl font-semibold">Float Parent</h1>
+               <h1 className="mt-1 text-2xl font-semibold">Float</h1>
               <p className="mt-1 text-sm text-muted-foreground">One parent part manufactured for multiple companies with different BOM combinations</p>
             </div>
            <div className="rounded-md border border-border bg-white px-3 py-2 text-right">
@@ -128,6 +128,60 @@ function FloatParentDetails() {
          </section>
          {showVariantCreator ? <VariantCreatorModal onClose={() => setShowVariantCreator(false)} onCreate={(variant) => { setVariants((current) => [...current, variant]); setSelectedCode(variant.code); setShowVariantCreator(false); }} /> : null}
       </main>
+    </div>
+  );
+}
+
+type Variant = (typeof parentVariants)[number];
+
+function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCreate: (variant: Variant) => void }) {
+  const [company, setCompany] = useState("");
+  const [product, setProduct] = useState("");
+  const [code, setCode] = useState("");
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const normalizedCode = code.trim().toUpperCase();
+    onCreate({
+      code: normalizedCode,
+      name: product.trim(),
+      company: company.trim(),
+      parts: subparts.slice(0, 2).map((part) => ({
+        code: part.code,
+        name: part.name,
+        material: part.material,
+        qty: 1,
+      })),
+    });
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4" role="dialog" aria-modal="true" aria-labelledby="create-variant-title">
+      <form onSubmit={handleSubmit} className="w-full max-w-md rounded-xl border border-border bg-white p-6 shadow-xl">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="create-variant-title" className="text-lg font-semibold">Create variant</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Add a company-specific BOM variant.</p>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Close" className="rounded-md px-2 py-1 text-xl leading-none text-muted-foreground hover:bg-muted hover:text-foreground">×</button>
+        </div>
+        <label className="mt-6 block text-sm">
+          <span className="mb-1.5 block font-medium">Company <span className="text-destructive">*</span></span>
+          <input value={company} onChange={(event) => setCompany(event.target.value)} required placeholder="Eureka Forbes" className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </label>
+        <label className="mt-4 block text-sm">
+          <span className="mb-1.5 block font-medium">Variant name <span className="text-destructive">*</span></span>
+          <input value={product} onChange={(event) => setProduct(event.target.value)} required placeholder="Eureka Pro" className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </label>
+        <label className="mt-4 block text-sm">
+          <span className="mb-1.5 block font-medium">Variant code <span className="text-destructive">*</span></span>
+          <input value={code} onChange={(event) => setCode(event.target.value)} required placeholder="FL-NEW" className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </label>
+        <div className="mt-6 flex justify-end gap-3">
+          <button type="button" onClick={onClose} className="rounded-md border border-input bg-white px-4 py-2 text-sm font-medium hover:bg-muted">Cancel</button>
+          <button type="submit" disabled={!company.trim() || !product.trim() || !code.trim()} className="rounded-md border border-input bg-white px-4 py-2 text-sm font-medium hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">Create variant</button>
+        </div>
+      </form>
     </div>
   );
 }
