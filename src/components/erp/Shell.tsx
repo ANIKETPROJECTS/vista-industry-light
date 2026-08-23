@@ -12,6 +12,7 @@ import {
   Search,
   Settings,
   Boxes,
+  PackageOpen,
 } from "lucide-react";
 
 const nav = [
@@ -23,6 +24,7 @@ const nav = [
   { to: "/procurement", label: "Procurement", icon: Truck },
   { to: "/production", label: "Production & Workforce", icon: Users },
   { to: "/subhub", label: "SubHub", icon: Boxes },
+  { to: "/inventory", label: "Inventory Management", icon: PackageOpen },
 ] as const;
 
 export function Shell({
