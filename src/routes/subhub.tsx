@@ -40,7 +40,7 @@ const floatParents: ParentPart[] = skus.map((sku) => ({
 const families = [
   {
     code: "FLOAT",
-    name: "Float Parent",
+    name: "Float",
     description: "One parent part manufactured for multiple companies with different BOM combinations",
     parents: floatParents,
   },
@@ -62,7 +62,7 @@ const parentCards = [
   },
   {
     code: "P-ARM",
-    name: "Float Arm Parent",
+    name: "Float Arm",
     image: "/float-arm-parent-parts.png",
     description: "Parent definition for arm and pivot assemblies",
     family: "ARM",
@@ -75,7 +75,7 @@ const parentCards = [
   },
   {
     code: "P-VAL",
-    name: "Valve Parent",
+    name: "Valve",
     image: "/valve-parent-parts.png",
     description: "Parent definition for valve seat and seal assemblies",
     family: "VALVE",
@@ -88,7 +88,7 @@ const parentCards = [
   },
   {
     code: "P-CAP",
-    name: "Cover Parent",
+    name: "Cover",
     image: "/cover-parent-parts.png",
     description: "Parent definition for cover and retainer assemblies",
     family: "COVER",
@@ -193,7 +193,7 @@ function SubHub() {
             <button
               type="button"
               onClick={() => setShowParentCreator((current) => !current)}
-              className="rule-header inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"
+              className="inline-flex items-center gap-2 rounded-md border border-input bg-white px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
             >
               <Plus className="size-4" />
               {showParentCreator ? "Close" : "Add parent product"}
@@ -208,6 +208,7 @@ function SubHub() {
                   setParentDefinitions((current) => [...current, parent]);
                   setShowParentCreator(false);
                 }}
+                onClose={() => setShowParentCreator(false)}
               />
             ) : null}
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -391,51 +392,82 @@ function PartRecipe({ parent }: { parent: ParentPart }) {
   );
 }
 
-function ParentProductCreator({ onCreate }: { onCreate: (parent: ParentCard) => void }) {
+function ParentProductCreator({ onCreate, onClose }: { onCreate: (parent: ParentCard) => void; onClose: () => void }) {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
+  const [imageName, setImageName] = useState("");
+  const [imageError, setImageError] = useState(false);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!image) {
+      setImageError(true);
+      return;
+    }
     onCreate({
       code: code.trim().toUpperCase(),
       name: name.trim(),
-      description: description.trim() || "New parent product definition",
+      description: description.trim(),
       family: code.trim().toUpperCase(),
       status: "Not configured",
       enabled: false,
-      image: "/parent-part-placeholder.svg",
+      image,
     });
   }
 
   return (
-    <form onSubmit={handleSubmit} className="panel mb-4 border-primary/30 bg-primary/[0.02] p-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold">Add parent product</h3>
-          <p className="mt-1 text-xs text-muted-foreground">Create the parent definition first, then configure its variants and BOM structure.</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4" role="dialog" aria-modal="true" aria-labelledby="add-product-title">
+      <form onSubmit={handleSubmit} className="w-full max-w-lg rounded-xl border border-border bg-white p-6 shadow-xl">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 id="add-product-title" className="text-lg font-semibold">Add product</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Add an image and product details to create a new BOM product.</p>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Close" className="rounded-md px-2 py-1 text-xl leading-none text-muted-foreground hover:bg-muted hover:text-foreground">×</button>
         </div>
-        <button type="submit" disabled={!name.trim() || !code.trim()} className="rule-header inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50">
-          <Plus className="size-4" />
-          Add product
-        </button>
-      </div>
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
-        <label className="text-sm">
-          <span className="mb-1.5 block font-medium">Product name</span>
-          <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Pump Parent" required className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        <label className="mt-6 block text-sm">
+          <span className="mb-1.5 block font-medium">Product image <span className="text-destructive">*</span></span>
+          <input
+            type="file"
+            accept="image/*"
+            required
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              setImageName(file.name);
+              setImageError(false);
+              const reader = new FileReader();
+              reader.onload = () => setImage(typeof reader.result === "string" ? reader.result : "");
+              reader.readAsDataURL(file);
+            }}
+            className="block w-full cursor-pointer rounded-md border border-input bg-white px-3 py-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-sm"
+          />
         </label>
-        <label className="text-sm">
-          <span className="mb-1.5 block font-medium">Parent code</span>
-          <input value={code} onChange={(event) => setCode(event.target.value)} placeholder="P-PMP" required className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        {image ? <img src={image} alt="Selected product preview" className="mt-3 h-28 w-full rounded-md object-contain" /> : null}
+        {imageName ? <p className="mt-2 text-xs text-muted-foreground">{imageName}</p> : null}
+        {imageError ? <p className="mt-1 text-xs text-destructive">Please upload a product image.</p> : null}
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <label className="text-sm">
+            <span className="mb-1.5 block font-medium">Product name <span className="text-destructive">*</span></span>
+            <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Pump" required className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+          </label>
+          <label className="text-sm">
+            <span className="mb-1.5 block font-medium">Product code <span className="text-destructive">*</span></span>
+            <input value={code} onChange={(event) => setCode(event.target.value)} placeholder="P-PMP" required className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+          </label>
+        </div>
+        <label className="mt-4 block text-sm">
+          <span className="mb-1.5 block font-medium">Description <span className="text-destructive">*</span></span>
+          <input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Pump assembly definition" required className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
         </label>
-        <label className="text-sm">
-          <span className="mb-1.5 block font-medium">Short description</span>
-          <input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Pump assembly definition" className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
-        </label>
-      </div>
-    </form>
+        <div className="mt-6 flex justify-end gap-3">
+          <button type="button" onClick={onClose} className="rounded-md border border-input bg-white px-4 py-2 text-sm font-medium hover:bg-muted">Cancel</button>
+          <button type="submit" disabled={!name.trim() || !code.trim() || !description.trim() || !image} className="rounded-md border border-input bg-white px-4 py-2 text-sm font-medium hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">Add product</button>
+        </div>
+      </form>
+    </div>
   );
 }
 
