@@ -92,10 +92,9 @@ function FloatParentDetails() {
 
       <main className="min-w-0 flex-1">
         <header className="border-b border-border bg-background/85 px-6 py-4 backdrop-blur">
-          <Link to="/subhub" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" /> Back to parent parts
+           <Link to="/subhub" className="inline-flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary">
+             <ArrowLeft className="size-4" /> Float
           </Link>
-           <h1 className="mt-5 text-2xl font-semibold">Float</h1>
         </header>
 
          <section className="grid gap-6 p-6 lg:grid-cols-[300px_minmax(0,1fr)]">
