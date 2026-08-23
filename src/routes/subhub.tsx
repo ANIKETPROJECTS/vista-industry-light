@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Boxes, ChevronRight, CircleDot, Layers3, LogOut, Plus, ShieldCheck } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { skus, subparts } from "@/lib/erp-data";
@@ -92,6 +92,7 @@ export const Route = createFileRoute("/subhub")({
 });
 
 function SubHub() {
+  const navigate = useNavigate();
   const [signedIn, setSignedIn] = useState(false);
   const [ready, setReady] = useState(false);
   const [parentVariants, setParentVariants] = useState(floatParents);
@@ -190,7 +191,7 @@ function SubHub() {
                   <button
                     key={parent.code}
                     type="button"
-                    onClick={() => parent.enabled && (window.location.href = "/subhub/float-parent")}
+                    onClick={() => parent.enabled && navigate({ to: "/subhub/float-parent" })}
                     disabled={!parent.enabled}
                     className={`panel group relative p-4 text-left transition ${
                       selected ? "border-primary bg-primary/[0.04] ring-1 ring-primary/20" : parent.enabled ? "hover:-translate-y-0.5 hover:border-primary/40" : "cursor-not-allowed opacity-65"
