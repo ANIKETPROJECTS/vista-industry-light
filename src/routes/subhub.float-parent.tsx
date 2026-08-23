@@ -138,26 +138,30 @@ function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCre
   const [company, setCompany] = useState("");
   const [product, setProduct] = useState("");
   const [code, setCode] = useState("");
+  const [partQuantities, setPartQuantities] = useState<Record<string, number>>({});
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const normalizedCode = code.trim().toUpperCase();
+    const selectedParts = subparts
+      .filter((part) => partQuantities[part.code])
+      .map((part) => ({
+        code: part.code,
+        name: part.name,
+        material: part.material,
+        qty: partQuantities[part.code],
+      }));
     onCreate({
       code: normalizedCode,
       name: product.trim(),
       company: company.trim(),
-      parts: subparts.slice(0, 2).map((part) => ({
-        code: part.code,
-        name: part.name,
-        material: part.material,
-        qty: 1,
-      })),
+      parts: selectedParts,
     });
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4" role="dialog" aria-modal="true" aria-labelledby="create-variant-title">
-      <form onSubmit={handleSubmit} className="w-full max-w-md rounded-xl border border-border bg-white p-6 shadow-xl">
+      <form onSubmit={handleSubmit} className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl border border-border bg-white p-6 shadow-xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id="create-variant-title" className="text-lg font-semibold">Create variant</h2>
@@ -177,9 +181,55 @@ function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCre
           <span className="mb-1.5 block font-medium">Variant code <span className="text-destructive">*</span></span>
           <input value={code} onChange={(event) => setCode(event.target.value)} required placeholder="FL-NEW" className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
         </label>
+        <div className="mt-6">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium">Raw parts and quantities <span className="text-destructive">*</span></p>
+              <p className="mt-1 text-xs text-muted-foreground">Select the components required for this variant.</p>
+            </div>
+            <span className="text-xs text-muted-foreground">{Object.keys(partQuantities).length} selected</span>
+          </div>
+          <div className="mt-3 max-h-56 space-y-2 overflow-y-auto rounded-md border border-border p-2">
+            {subparts.map((part) => {
+              const selected = Boolean(partQuantities[part.code]);
+              return (
+                <div key={part.code} className={`flex items-center gap-3 rounded-md border px-3 py-2 ${selected ? "border-primary/40 bg-primary/5" : "border-transparent"}`}>
+                  <input
+                    type="checkbox"
+                    checked={selected}
+                    onChange={(event) => setPartQuantities((current) => {
+                      const next = { ...current };
+                      if (event.target.checked) next[part.code] = 1;
+                      else delete next[part.code];
+                      return next;
+                    })}
+                    className="size-4 accent-primary"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{part.name}</p>
+                    <p className="tabular text-xs text-muted-foreground">{part.code} · {part.material}</p>
+                  </div>
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                    Qty
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={partQuantities[part.code] ?? 1}
+                      disabled={!selected}
+                      onChange={(event) => setPartQuantities((current) => ({ ...current, [part.code]: Math.max(1, Number(event.target.value) || 1) }))}
+                      className="h-8 w-16 rounded-md border border-input bg-white px-2 text-center text-sm text-foreground outline-none focus:border-primary disabled:opacity-40"
+                    />
+                  </label>
+                </div>
+              );
+            })}
+          </div>
+          {!Object.keys(partQuantities).length ? <p className="mt-1 text-xs text-destructive">Select at least one raw part.</p> : null}
+        </div>
         <div className="mt-6 flex justify-end gap-3">
           <button type="button" onClick={onClose} className="rounded-md border border-input bg-white px-4 py-2 text-sm font-medium hover:bg-muted">Cancel</button>
-          <button type="submit" disabled={!company.trim() || !product.trim() || !code.trim()} className="rounded-md border border-input bg-white px-4 py-2 text-sm font-medium hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">Create variant</button>
+          <button type="submit" disabled={!company.trim() || !product.trim() || !code.trim() || !Object.keys(partQuantities).length} className="rounded-md border border-input bg-white px-4 py-2 text-sm font-medium hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">Create variant</button>
         </div>
       </form>
     </div>
