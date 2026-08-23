@@ -228,12 +228,9 @@ function SubHub() {
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <div className={`flex size-9 items-center justify-center rounded-lg ${selected ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-                        <Boxes className="size-4" />
+                      <div className="size-12 overflow-hidden rounded-lg border border-border bg-secondary">
+                        <img src="/parent-part-placeholder.svg" alt="" className="size-full object-cover" />
                       </div>
-                      <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${parent.enabled ? "bg-success/10 text-success" : "bg-secondary text-muted-foreground"}`}>
-                        {parent.status}
-                      </span>
                     </div>
                     <p className="tabular mt-4 text-[11px] font-semibold text-muted-foreground">{parent.code}</p>
                     <p className="mt-1 text-sm font-semibold">{parent.name}</p>
@@ -248,9 +245,6 @@ function SubHub() {
                         <p className="tabular mt-0.5 text-xs font-semibold">{parent.subparts}</p>
                       </div>
                     </div>
-                    <p className="mt-2 truncate text-[11px] text-muted-foreground">
-                      Owner: {parent.owner} · Updated {parent.updated}
-                    </p>
                     <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
                       Open structure <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                     </div>
