@@ -190,18 +190,18 @@ function SubHub() {
             <div className="min-w-0 flex-1">
               <h1 className="text-xl font-semibold">Bills of Materials</h1>
             </div>
+            <button
+              type="button"
+              onClick={() => setShowParentCreator((current) => !current)}
+              className="rule-header inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"
+            >
+              <Plus className="size-4" />
+              {showParentCreator ? "Close" : "Add parent product"}
+            </button>
           </div>
         </header>
         <section className="flex-1 space-y-6 p-6">
           <div>
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <button type="button" onClick={() => setShowParentCreator((current) => !current)} className="rule-header inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium">
-                  <Plus className="size-4" />
-                  {showParentCreator ? "Close" : "Add parent product"}
-                </button>
-              </div>
-            </div>
             {showParentCreator ? (
               <ParentProductCreator
                 onCreate={(parent) => {
