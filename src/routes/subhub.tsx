@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { ArrowLeft, Boxes, ChevronRight, CircleDot, Layers3, LogOut, Plus, ShieldCheck } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { skus, subparts } from "@/lib/erp-data";
@@ -92,6 +92,7 @@ export const Route = createFileRoute("/subhub")({
 });
 
 function SubHub() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [signedIn, setSignedIn] = useState(false);
   const [ready, setReady] = useState(false);
   const [parentVariants, setParentVariants] = useState(floatParents);
@@ -110,6 +111,10 @@ function SubHub() {
 
   if (!signedIn) {
     return <SubHubLogin onSuccess={() => setSignedIn(true)} />;
+  }
+
+  if (pathname === "/subhub/float-parent") {
+    return <Outlet />;
   }
 
   return (
