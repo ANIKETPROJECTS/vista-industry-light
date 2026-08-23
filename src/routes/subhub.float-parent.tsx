@@ -133,6 +133,7 @@ function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCre
   const [product, setProduct] = useState("");
   const [code, setCode] = useState("");
   const [partQuantities, setPartQuantities] = useState<Record<string, number>>({});
+  const [partSearch, setPartSearch] = useState("");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -152,10 +153,11 @@ function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCre
       parts: selectedParts,
     });
   }
+  const filteredSubparts = subparts.filter((part) => `${part.code} ${part.name} ${part.material}`.toLowerCase().includes(partSearch.toLowerCase()));
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/20" role="dialog" aria-modal="true" aria-labelledby="create-variant-title">
-      <form onSubmit={handleSubmit} className="h-full max-h-screen w-full max-w-md overflow-y-auto rounded-l-xl border-y border-l border-border bg-white p-6 shadow-xl">
+      <form onSubmit={handleSubmit} className="flex h-full max-h-screen w-full max-w-md flex-col overflow-y-auto rounded-l-xl border-y border-l border-border bg-white p-6 shadow-xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id="create-variant-title" className="text-lg font-semibold">Create variant</h2>
@@ -175,7 +177,7 @@ function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCre
           <span className="mb-1.5 block font-medium">Variant code <span className="text-destructive">*</span></span>
           <input value={code} onChange={(event) => setCode(event.target.value)} required placeholder="FL-NEW" className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
         </label>
-        <div className="mt-6">
+        <div className="mt-6 flex min-h-0 flex-1 flex-col">
           <div className="flex items-end justify-between gap-3">
             <div>
               <p className="text-sm font-medium">Raw parts and quantities <span className="text-destructive">*</span></p>
@@ -183,8 +185,9 @@ function VariantCreatorModal({ onClose, onCreate }: { onClose: () => void; onCre
             </div>
             <span className="text-xs text-muted-foreground">{Object.keys(partQuantities).length} selected</span>
           </div>
-          <div className="mt-3 max-h-56 space-y-2 overflow-y-auto rounded-md border border-border p-2">
-            {subparts.map((part) => {
+          <label className="relative mt-3 block"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><input value={partSearch} onChange={(event) => setPartSearch(event.target.value)} placeholder="Search raw parts" className="h-9 w-full rounded-md border border-input bg-white pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></label>
+          <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto rounded-md border border-border p-2">
+            {filteredSubparts.map((part) => {
               const selected = Boolean(partQuantities[part.code]);
               return (
                 <div key={part.code} className={`flex items-center gap-3 rounded-md border px-3 py-2 ${selected ? "border-primary/40 bg-primary/5" : "border-transparent"}`}>
