@@ -46,6 +46,41 @@ const families = [
   },
 ];
 
+const parentCards = [
+  {
+    code: "P-FLT",
+    name: "Float Parent",
+    description: "Main parent assembly manufactured for multiple company variants",
+    family: "FLOAT",
+    status: "Configured",
+    enabled: true,
+  },
+  {
+    code: "P-ARM",
+    name: "Float Arm Parent",
+    description: "Parent definition for arm and pivot assemblies",
+    family: "ARM",
+    status: "Not configured",
+    enabled: false,
+  },
+  {
+    code: "P-VAL",
+    name: "Valve Parent",
+    description: "Parent definition for valve seat and seal assemblies",
+    family: "VALVE",
+    status: "Not configured",
+    enabled: false,
+  },
+  {
+    code: "P-CAP",
+    name: "Cover Parent",
+    description: "Parent definition for cover and retainer assemblies",
+    family: "COVER",
+    status: "Not configured",
+    enabled: false,
+  },
+];
+
 export const Route = createFileRoute("/subhub")({
   head: () => ({
     meta: [
@@ -62,6 +97,7 @@ function SubHub() {
   const [parentVariants, setParentVariants] = useState(floatParents);
   const [selectedParentCode, setSelectedParentCode] = useState("FL-RVN");
   const [showCreator, setShowCreator] = useState(false);
+  const [selectedParent, setSelectedParent] = useState("P-FLT");
 
   useEffect(() => {
     setSignedIn(window.localStorage.getItem(SESSION_KEY) === "true");
@@ -138,6 +174,63 @@ function SubHub() {
           </div>
         </header>
         <section className="flex-1 space-y-6 p-6">
+          <div>
+            <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Step 1 · Choose a parent</p>
+                <h2 className="mt-1 text-lg font-semibold">Parent part creation</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Select a parent part to create or manage its company-specific BOM structure.</p>
+              </div>
+              <span className="rounded bg-secondary px-2.5 py-1 text-xs font-medium">{parentCards.length} parent definitions</span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {parentCards.map((parent) => {
+                const selected = selectedParent === parent.code;
+                return (
+                  <button
+                    key={parent.code}
+                    type="button"
+                    onClick={() => parent.enabled && setSelectedParent(parent.code)}
+                    disabled={!parent.enabled}
+                    className={`panel group relative p-4 text-left transition ${
+                      selected ? "border-primary bg-primary/[0.04] ring-1 ring-primary/20" : parent.enabled ? "hover:-translate-y-0.5 hover:border-primary/40" : "cursor-not-allowed opacity-65"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className={`flex size-9 items-center justify-center rounded-lg ${selected ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+                        <Boxes className="size-4" />
+                      </div>
+                      <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${parent.enabled ? "bg-success/10 text-success" : "bg-secondary text-muted-foreground"}`}>
+                        {parent.status}
+                      </span>
+                    </div>
+                    <p className="tabular mt-4 text-[11px] font-semibold text-muted-foreground">{parent.code}</p>
+                    <p className="mt-1 text-sm font-semibold">{parent.name}</p>
+                    <p className="mt-1 min-h-10 text-xs leading-5 text-muted-foreground">{parent.description}</p>
+                    {parent.enabled ? (
+                      <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
+                        Open structure <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    ) : (
+                      <div className="mt-3 text-xs text-muted-foreground">Available next</div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {selectedParent !== "P-FLT" ? (
+            <div className="panel flex min-h-40 items-center justify-center p-6 text-center">
+              <div>
+                <Boxes className="mx-auto size-8 text-muted-foreground/60" />
+                <p className="mt-3 text-sm font-medium">This parent structure is ready to be configured</p>
+                <p className="mt-1 text-xs text-muted-foreground">Select Float Parent to open the existing company BOM architecture.</p>
+              </div>
+            </div>
+          ) : null}
+
+          {selectedParent !== "P-FLT" ? null : (
           <div className="panel overflow-hidden">
             <div className="flex flex-wrap items-start gap-4 border-b border-border px-5 py-4">
               <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -191,8 +284,9 @@ function SubHub() {
               })}
             </div>
           </div>
+          )}
 
-          {showCreator ? (
+          {selectedParent === "P-FLT" && showCreator ? (
             <VariantCreator
               onCreate={(parent) => {
                 setParentVariants((current) => [...current, parent]);
@@ -201,7 +295,7 @@ function SubHub() {
               }}
             />
           ) : null}
-          <PartRecipe parent={parentVariants.find((parent) => parent.code === selectedParentCode) ?? parentVariants[0]} />
+          {selectedParent === "P-FLT" ? <PartRecipe parent={parentVariants.find((parent) => parent.code === selectedParentCode) ?? parentVariants[0]} /> : null}
         </section>
       </main>
     </div>
