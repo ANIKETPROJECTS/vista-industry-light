@@ -188,24 +188,14 @@ function SubHub() {
         <header className="border-b border-border bg-background/85 px-6 py-4 backdrop-blur">
           <div className="flex items-center gap-4">
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">SubHub panel</p>
-              <h1 className="mt-1 text-xl font-semibold">Bills of Materials</h1>
+              <h1 className="text-xl font-semibold">Bills of Materials</h1>
             </div>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 rounded-md border border-input bg-card px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
-            >
-              <ArrowLeft className="size-4" />
-              Back to ERP
-            </Link>
           </div>
         </header>
         <section className="flex-1 space-y-6 p-6">
           <div>
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold">Parent products</h2>
               <div className="flex items-center gap-3">
-                <span className="rounded bg-secondary px-2.5 py-1 text-xs font-medium">{parentDefinitions.length} parent products</span>
                 <button type="button" onClick={() => setShowParentCreator((current) => !current)} className="rule-header inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium">
                   <Plus className="size-4" />
                   {showParentCreator ? "Close" : "Add parent product"}
@@ -227,28 +217,28 @@ function SubHub() {
                   <a
                     key={parent.code}
                     href={parent.code === "P-FLT" ? "/subhub/float-parent" : `/subhub/parent/${parent.code}`}
-                    className={`panel group relative p-4 text-left transition ${
+                    className={`panel group relative p-5 text-left transition ${
                       selected ? "border-primary bg-primary/[0.04] ring-1 ring-primary/20" : parent.enabled ? "hover:-translate-y-0.5 hover:border-primary/40" : "cursor-not-allowed opacity-65"
                     }`}
                   >
                     <div className="flex h-32 items-center justify-center">
                       <img src={parent.image} alt={`${parent.name} component parts`} className="size-full object-contain" />
                     </div>
-                    <p className="tabular mt-2 text-[11px] font-semibold text-muted-foreground">{parent.code}</p>
-                    <p className="mt-1 text-sm font-semibold">{parent.name}</p>
-                    <p className="mt-1 min-h-10 text-xs leading-5 text-muted-foreground">{parent.description}</p>
+                    <p className="tabular mt-2 text-xs font-semibold text-muted-foreground">{parent.code}</p>
+                    <p className="mt-1 text-base font-semibold">{parent.name}</p>
+                    <p className="mt-1 min-h-10 text-sm leading-5 text-muted-foreground">{parent.description}</p>
                     <div className="mt-3 grid grid-cols-2 gap-2 border-t border-border/70 pt-3">
                       <div>
-                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Variants</p>
-                        <p className="tabular mt-0.5 text-xs font-semibold">{parent.variants}</p>
+                        <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Variants</p>
+                        <p className="tabular mt-0.5 text-sm font-semibold">{parent.variants}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Raw parts</p>
-                        <p className="tabular mt-0.5 text-xs font-semibold">{parent.subparts}</p>
+                        <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Raw parts</p>
+                        <p className="tabular mt-0.5 text-sm font-semibold">{parent.subparts}</p>
                       </div>
                     </div>
-                    <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
-                      Open structure <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                    <div className="mt-3 flex items-center gap-1 text-sm font-medium text-primary">
+                      Open structure <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                     </div>
                   </a>
                 );
