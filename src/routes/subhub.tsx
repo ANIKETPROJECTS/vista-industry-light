@@ -49,7 +49,7 @@ const families = [
 const parentCards = [
   {
     code: "P-FLT",
-    name: "Float Parent",
+    name: "Float",
     image: "/float-parent-parts.png",
     description: "Main parent assembly manufactured for multiple company variants",
     family: "FLOAT",
@@ -143,7 +143,7 @@ function SubHub() {
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="flex w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
-        <div className="flex items-center gap-3 border-b border-sidebar-border px-5 py-4">
+        <div className="flex h-[65px] shrink-0 items-center gap-3 border-b border-sidebar-border px-5">
           <div className="rule-header flex size-9 items-center justify-center rounded-md">
             <Boxes className="size-4" />
           </div>
@@ -185,8 +185,8 @@ function SubHub() {
       </aside>
 
       <main className="flex min-w-0 flex-1 flex-col">
-        <header className="border-b border-border bg-background/85 px-6 py-4 backdrop-blur">
-          <div className="flex items-center gap-4">
+        <header className="h-[65px] shrink-0 border-b border-border bg-background/85 px-6 backdrop-blur">
+          <div className="flex h-full items-center gap-4">
             <div className="min-w-0 flex-1">
               <h1 className="text-xl font-semibold">Bills of Materials</h1>
             </div>
@@ -196,7 +196,7 @@ function SubHub() {
               className="inline-flex items-center gap-2 rounded-md border border-input bg-white px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
             >
               <Plus className="size-4" />
-              {showParentCreator ? "Close" : "Add parent product"}
+              {showParentCreator ? "Close" : "Add product"}
             </button>
           </div>
         </header>
@@ -252,7 +252,7 @@ function SubHub() {
               <div>
                 <Boxes className="mx-auto size-8 text-muted-foreground/60" />
                 <p className="mt-3 text-sm font-medium">This parent structure is ready to be configured</p>
-                <p className="mt-1 text-xs text-muted-foreground">Select Float Parent to open the existing company BOM architecture.</p>
+                <p className="mt-1 text-xs text-muted-foreground">Select Float to open the existing company BOM architecture.</p>
               </div>
             </div>
           ) : null}
@@ -265,7 +265,7 @@ function SubHub() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-semibold">Float Parent</h2>
+                  <h2 className="text-base font-semibold">Float</h2>
                   <span className="rounded bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">{parentVariants.length} company variants</span>
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">{families[0].description}</p>
