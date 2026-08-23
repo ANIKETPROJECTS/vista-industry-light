@@ -231,12 +231,10 @@ function SubHub() {
                       selected ? "border-primary bg-primary/[0.04] ring-1 ring-primary/20" : parent.enabled ? "hover:-translate-y-0.5 hover:border-primary/40" : "cursor-not-allowed opacity-65"
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="size-12 overflow-hidden rounded-lg border border-border bg-secondary">
-                        <img src={parent.image} alt={`${parent.name} component parts`} className="size-full object-contain" />
-                      </div>
+                    <div className="flex h-32 items-center justify-center">
+                      <img src={parent.image} alt={`${parent.name} component parts`} className="size-full object-contain" />
                     </div>
-                    <p className="tabular mt-4 text-[11px] font-semibold text-muted-foreground">{parent.code}</p>
+                    <p className="tabular mt-2 text-[11px] font-semibold text-muted-foreground">{parent.code}</p>
                     <p className="mt-1 text-sm font-semibold">{parent.name}</p>
                     <p className="mt-1 min-h-10 text-xs leading-5 text-muted-foreground">{parent.description}</p>
                     <div className="mt-3 grid grid-cols-2 gap-2 border-t border-border/70 pt-3">
