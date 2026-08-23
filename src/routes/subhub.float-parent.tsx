@@ -60,7 +60,7 @@ function FloatParentDetails() {
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="flex w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
-        <div className="flex items-center gap-3 border-b border-sidebar-border px-5 py-4">
+         <div className="flex h-[65px] shrink-0 items-center gap-3 border-b border-sidebar-border px-5">
           <div className="rule-header flex size-9 items-center justify-center rounded-md"><Boxes className="size-4" /></div>
           <div className="leading-tight">
             <p className="text-sm font-semibold">SubHub</p>
@@ -91,8 +91,8 @@ function FloatParentDetails() {
       </aside>
 
       <main className="min-w-0 flex-1">
-        <header className="border-b border-border bg-background/85 px-6 py-4 backdrop-blur">
-           <Link to="/subhub" className="inline-flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary">
+         <header className="h-[65px] border-b border-border bg-white px-6 backdrop-blur">
+           <Link to="/subhub" className="inline-flex h-full items-center gap-2 text-lg font-semibold text-foreground hover:text-primary">
              <ArrowLeft className="size-4" /> Float
           </Link>
         </header>
