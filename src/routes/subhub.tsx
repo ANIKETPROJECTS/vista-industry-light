@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { ArrowLeft, Boxes, ChevronRight, CircleDot, Database, Layers3, LogOut, PackageOpen, Plus, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Boxes, ChevronRight, CircleDot, ClipboardCheck, Database, Layers3, LogOut, PackageOpen, Plus, ShieldCheck } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { skus, subparts } from "@/lib/erp-data";
 
@@ -171,6 +171,15 @@ function SubHub() {
               <Link to="/inventory" className="block py-1.5 text-xs text-muted-foreground hover:text-sidebar-primary">Inventory</Link>
               <Link to="/inventory/history" className="block py-1.5 text-xs text-muted-foreground hover:text-sidebar-primary">History</Link>
               <Link to="/inventory/adjustment" className="block py-1.5 text-xs text-muted-foreground hover:text-sidebar-primary">Stock Adjustment</Link>
+            </div>
+          </div>
+          <div className="group">
+            <Link to="/subhub/production" className="mt-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-primary">
+              <ClipboardCheck className="size-4" />
+              Hub Manager
+            </Link>
+            <div className="hidden pl-9 group-hover:block">
+              <Link to="/subhub/production" className="block py-1.5 text-xs text-muted-foreground hover:text-sidebar-primary">Production</Link>
             </div>
           </div>
         </nav>
